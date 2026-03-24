@@ -500,27 +500,29 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                disabled={currentPage === 1 || visibleGames.length === 0}
-                className="w-full sm:w-auto"
-              >
-                Anterior
-              </Button>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-center text-sm text-muted-foreground sm:text-left">
                 Página {currentPage} de {totalPages}
               </span>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages || visibleGames.length === 0}
-                className="w-full sm:w-auto"
-              >
-                Siguiente
-              </Button>
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1 || visibleGames.length === 0}
+                  className="w-full sm:w-auto"
+                >
+                  Anterior
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages || visibleGames.length === 0}
+                  className="w-full sm:w-auto"
+                >
+                  Siguiente
+                </Button>
+              </div>
             </div>
           </div>
         ) : null}
