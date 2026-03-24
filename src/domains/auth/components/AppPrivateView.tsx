@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ComponentShowcase from "@domains/design-system/components/ComponentShowcase";
 import { AuthAccessPanel } from "@domains/auth/components/AuthAccessPanel";
 import { AuthPageShell } from "@domains/auth/components/AuthPageShell";
 import { ProtectedArea } from "@domains/auth/components/ProtectedArea";
@@ -16,7 +15,6 @@ export function AppPrivateView() {
         <ProtectedArea>
           <AddGameForm onSuccess={() => setListVersion((v) => v + 1)} />
           <CompletedGamesList key={listVersion} />
-          <ComponentShowcase />
         </ProtectedArea>
       </div>
     </AuthPageShell>

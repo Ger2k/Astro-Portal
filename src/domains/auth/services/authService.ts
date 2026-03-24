@@ -12,27 +12,27 @@ function humanizeAuthError(error: unknown) {
   const code = firebaseError?.code ?? "";
 
   if (code === "auth/popup-closed-by-user") {
-    return "Se cerro la ventana de Google antes de terminar el login.";
+    return "Se cerró la ventana de Google antes de terminar el login.";
   }
 
   if (code === "auth/popup-blocked") {
-    return "El navegador bloqueo la ventana emergente. Habilita popups para continuar.";
+    return "El navegador bloqueó la ventana emergente. Habilita popups para continuar.";
   }
 
   if (code === "auth/network-request-failed") {
-    return "Fallo de red al conectar con Google. Revisa tu conexion e intenta otra vez.";
+    return "Fallo de red al conectar con Google. Revisa tu conexión e intenta otra vez.";
   }
 
   if (code === "auth/unauthorized-domain") {
-    return "Este dominio no esta autorizado en Firebase Authentication. Agrega el dominio de Netlify en Authentication > Settings > Authorized domains.";
+    return "Este dominio no está autorizado en Firebase Authentication. Agrega el dominio de Netlify en Authentication > Settings > Authorized domains.";
   }
 
   if (code === "auth/operation-not-allowed") {
-    return "El proveedor Google no esta habilitado en Firebase Authentication > Sign-in method.";
+    return "El proveedor Google no está habilitado en Firebase Authentication > Sign-in method.";
   }
 
   if (!(error instanceof Error)) {
-    return "No se pudo completar la autenticacion. Intenta nuevamente.";
+    return "No se pudo completar la autenticación. Intenta nuevamente.";
   }
 
   return error.message;
@@ -52,7 +52,7 @@ export async function signInWithGooglePopup() {
       errorMessage: null,
     };
   } catch (error) {
-    // Deja informacion util en consola para depurar entorno (dominios, provider, etc.).
+    // Deja información útil en consola para depurar entorno (dominios, provider, etc.).
     console.error("[auth] Google sign-in failed", error);
     return {
       ok: false as const,

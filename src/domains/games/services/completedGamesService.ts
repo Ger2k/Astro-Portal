@@ -47,7 +47,7 @@ function mapToCompletedGame(raw: RawGame, nodeKey: string): CompletedGame {
   return {
     nodeKey,
     id: typeof raw.id === "string" ? raw.id : nodeKey,
-    title: typeof raw.title === "string" && raw.title ? raw.title : "Juego sin titulo",
+    title: typeof raw.title === "string" && raw.title ? raw.title : "Juego sin título",
     platform: typeof raw.platform === "string" ? raw.platform : "",
     date: typeof raw.date === "string" && raw.date ? raw.date : null,
     score: typeof raw.score === "number" ? raw.score : null,

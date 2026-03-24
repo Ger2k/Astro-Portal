@@ -1,20 +1,15 @@
 ---
 export const prerender = true;
 import AppLayout from '@/layouts/AppLayout.astro';
-import AppStatus from '@/shared/ui/primitives/AppStatus';
 import { HomeAuthCard } from '@/domains/auth/components/HomeAuthCard';
 ---
 
-<AppLayout title="Portal Games Tracker" description="Gestion personal de juegos completados">
+<AppLayout title="Portal Games Tracker" description="Gestión personal de juegos completados">
   <section class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
     <h1 class="text-2xl font-semibold text-emerald-900">Portal Games Tracker</h1>
     <p class="mt-3 text-sm leading-6 text-slate-700">
-      Fundacion del proyecto lista. Astro renderiza la shell y React gestiona islas interactivas.
+      Guarda tus juegos terminados, consulta tu historial y organiza tu colección personal en un solo lugar.
     </p>
-
-    <div class="mt-5">
-      <AppStatus client:idle />
-    </div>
 
     <div class="mt-6">
       <HomeAuthCard client:load />

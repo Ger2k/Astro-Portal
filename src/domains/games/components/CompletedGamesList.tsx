@@ -55,7 +55,7 @@ function ScoreBadge({ score }: { score: number | null }) {
   return (
     <span
       className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${colorClass}`}
-      aria-label={`Puntuacion: ${score} sobre 100`}
+      aria-label={`Puntuación: ${score} sobre 100`}
     >
       {score}/100
     </span>
@@ -314,7 +314,7 @@ export function CompletedGamesList() {
       editForm.platform === "Otro" ? customPlatform.trim() : editForm.platform.trim();
 
     if (!editForm.title.trim()) {
-      setEditError("El titulo es obligatorio.");
+      setEditError("El título es obligatorio.");
       return;
     }
 
@@ -329,7 +329,7 @@ export function CompletedGamesList() {
     }
 
     if (editForm.score !== null && (editForm.score < 0 || editForm.score > 100)) {
-      setEditError("La puntuacion debe estar entre 0 y 100.");
+      setEditError("La puntuación debe estar entre 0 y 100.");
       return;
     }
 
@@ -402,7 +402,7 @@ export function CompletedGamesList() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por titulo, plataforma o notas"
+            placeholder="Buscar por título, plataforma o notas"
             aria-label="Buscar juegos"
           />
 
@@ -425,10 +425,10 @@ export function CompletedGamesList() {
             onChange={(e) => setSortBy(e.target.value)}
             aria-label="Ordenar juegos"
           >
-            <option value="recent">Mas recientes</option>
-            <option value="oldest">Mas antiguos</option>
-            <option value="score">Mejor puntuacion</option>
-            <option value="hours">Mas horas</option>
+            <option value="recent">Más recientes</option>
+            <option value="oldest">Más antiguos</option>
+            <option value="score">Mejor puntuación</option>
+            <option value="hours">Más horas</option>
           </select>
         </div>
 
@@ -441,7 +441,7 @@ export function CompletedGamesList() {
 
           <div className="flex items-center gap-2">
             <label className="text-sm text-muted-foreground" htmlFor="page-size">
-              Por pagina
+              Por página
             </label>
             <select
               id="page-size"
@@ -468,7 +468,7 @@ export function CompletedGamesList() {
 
         {!loading && !errorMessage && games.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Aun no hay juegos completados en tu cuenta.
+            Aún no hay juegos completados en tu cuenta.
           </p>
         ) : null}
 
@@ -502,7 +502,7 @@ export function CompletedGamesList() {
               Anterior
             </Button>
             <span className="text-sm text-muted-foreground">
-              Pagina {currentPage} de {totalPages}
+              Página {currentPage} de {totalPages}
             </span>
             <Button
               type="button"
@@ -533,7 +533,7 @@ export function CompletedGamesList() {
           noValidate
         >
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">Titulo</label>
+            <label className="block text-sm font-medium text-foreground">Título</label>
             <Input
               type="text"
               value={editForm.title}
@@ -576,7 +576,7 @@ export function CompletedGamesList() {
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">Puntuacion</label>
+            <label className="block text-sm font-medium text-foreground">Puntuación</label>
             <div className="flex items-center gap-3">
               <input
                 type="range"
@@ -585,7 +585,7 @@ export function CompletedGamesList() {
                 value={editForm.score ?? 0}
                 onChange={(e) => setEditField("score", Number(e.target.value))}
                 className="flex-1 accent-primary"
-                aria-label={`Puntuacion: ${editForm.score ?? 0} de 100`}
+                aria-label={`Puntuación: ${editForm.score ?? 0} de 100`}
               />
               <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
                 {editForm.score ?? 0}
@@ -650,7 +650,7 @@ export function CompletedGamesList() {
 
       <Modal
         isOpen={Boolean(pendingDelete)}
-        title="Confirmar eliminacion"
+        title="Confirmar eliminación"
         description={
           pendingDelete
             ? `Se eliminara \"${pendingDelete.title}\". Esta accion no se puede deshacer.`

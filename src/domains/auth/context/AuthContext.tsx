@@ -42,7 +42,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         });
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Error inicializando autenticacion";
+      const message = error instanceof Error ? error.message : "Error inicializando autenticación";
       setState({
         user: null,
         status: "error",

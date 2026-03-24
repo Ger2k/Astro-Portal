@@ -13,7 +13,7 @@ export function ProtectedArea({ children }: ProtectedAreaProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Verificando sesion...</CardTitle>
+          <CardTitle>Verificando sesión...</CardTitle>
         </CardHeader>
       </Card>
     );
@@ -27,7 +27,7 @@ export function ProtectedArea({ children }: ProtectedAreaProps) {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Debes iniciar sesion con Google para abrir esta seccion privada.
+            Debes iniciar sesión con Google para abrir esta sección privada.
           </p>
           {errorMessage ? <p className="mt-2 text-sm text-red-700">{errorMessage}</p> : null}
         </CardContent>

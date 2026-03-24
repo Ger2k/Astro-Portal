@@ -82,7 +82,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
     const platformValue = isCustomPlatform ? customPlatform.trim() : form.platform;
 
     if (!form.title.trim()) {
-      setError("El titulo es obligatorio.");
+      setError("El título es obligatorio.");
       return;
     }
     if (!platformValue) {
@@ -94,7 +94,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
       return;
     }
     if (form.score !== null && (form.score < 0 || form.score > 100)) {
-      setError("La puntuacion debe estar entre 0 y 100.");
+      setError("La puntuación debe estar entre 0 y 100.");
       return;
     }
 
@@ -145,8 +145,8 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
         showCloseButton={false}
       >
         <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} noValidate className="space-y-4">
-          {/* Titulo */}
-          <Field label="Titulo" required>
+          {/* Título */}
+          <Field label="Título" required>
             <Input
               type="text"
               placeholder="Ej. Elden Ring"
@@ -190,8 +190,8 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
             />
           </Field>
 
-          {/* Puntuacion slider */}
-          <Field label="Puntuacion">
+          {/* Puntuación slider */}
+          <Field label="Puntuación">
             <div className="flex items-center gap-3">
               <input
                 type="range"
@@ -200,7 +200,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
                 value={form.score ?? 0}
                 onChange={(e) => set("score", Number(e.target.value))}
                 className="flex-1 accent-primary"
-                aria-label={`Puntuacion: ${form.score ?? 0} de 100`}
+                aria-label={`Puntuación: ${form.score ?? 0} de 100`}
               />
               <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
                 {form.score ?? 0}

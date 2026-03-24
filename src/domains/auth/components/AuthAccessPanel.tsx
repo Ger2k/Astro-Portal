@@ -10,11 +10,11 @@ export function AuthAccessPanel() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>Sesion</CardTitle>
+        <CardTitle>Sesión</CardTitle>
         <CardDescription>
           {isAuthenticated
-            ? "Tu sesion esta activa."
-            : "Necesitas iniciar sesion con Google para usar funciones privadas."}
+            ? "Tu sesión está activa."
+            : "Necesitas iniciar sesión con Google para usar funciones privadas."}
         </CardDescription>
       </CardHeader>
 
@@ -41,7 +41,7 @@ export function AuthAccessPanel() {
             </Button>
           ) : (
             <Button variant="secondary" onClick={logout} disabled={isBusy}>
-              {isBusy ? "Saliendo..." : "Cerrar sesion"}
+              {isBusy ? "Saliendo..." : "Cerrar sesión"}
             </Button>
           )}
         </div>
