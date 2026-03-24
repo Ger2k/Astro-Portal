@@ -70,7 +70,7 @@ interface GameCardProps {
 
 function GameCard({ game, onDelete, onEdit }: GameCardProps) {
   return (
-    <li className="flex items-start gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm">
+    <li className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-start">
       {game.cover ? (
         <div className="overflow-hidden rounded-lg ring-1 ring-border/80 shadow-sm">
           <img
@@ -91,7 +91,7 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col gap-3 self-stretch">
+      <div className="min-w-0 flex-1 space-y-1 self-stretch">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold text-foreground">{game.title}</p>
@@ -115,8 +115,11 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
             </p>
           ) : null}
         </div>
+      </div>
 
-        <div className="mt-auto flex flex-wrap gap-2 pt-1">
+      <div className="flex shrink-0 flex-row justify-end gap-2 sm:min-h-full sm:flex-col sm:items-end sm:justify-between">
+        <div className="hidden sm:block sm:h-1" aria-hidden="true" />
+        <div className="flex flex-wrap justify-end gap-2">
           <Button
             type="button"
             variant="secondary"
