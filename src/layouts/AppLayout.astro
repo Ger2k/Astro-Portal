@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { title, description = "" } = Astro.props;
+const hasHeaderExtra = Astro.slots.has("header-extra");
 ---
 
 <!doctype html>
@@ -19,18 +20,26 @@ const { title, description = "" } = Astro.props;
   </head>
   <body>
     <header class="sticky top-0 z-30 border-b border-border bg-[color-mix(in_oklab,var(--color-surface)_90%,white)] backdrop-blur">
-      <div class="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
-        <a href="/" class="font-semibold text-foreground">Portal Astro</a>
-        <nav aria-label="Principal">
-          <ul class="flex items-center gap-3 text-sm">
-            <li>
-              <a href="/" class="rounded px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground">Inicio</a>
-            </li>
-            <li>
-              <a href="/app" class="rounded px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground">App</a>
-            </li>
-          </ul>
-        </nav>
+      <div class="mx-auto w-full max-w-5xl px-4 py-3">
+        <div class="flex items-center justify-between gap-4">
+          <a href="/" class="font-semibold text-foreground">Portal Games Tracker</a>
+          <nav aria-label="Principal">
+            <ul class="flex items-center gap-3 text-sm">
+              <li>
+                <a href="/" class="rounded px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground">Inicio</a>
+              </li>
+              <li>
+                <a href="/app" class="rounded px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground">App</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        {hasHeaderExtra ? (
+          <div class="mt-3 border-t border-border/70 pt-3">
+            <slot name="header-extra" />
+          </div>
+        ) : null}
       </div>
     </header>
 

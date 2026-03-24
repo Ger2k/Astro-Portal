@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AuthAccessPanel } from "@domains/auth/components/AuthAccessPanel";
 import { AuthPageShell } from "@domains/auth/components/AuthPageShell";
 import { ProtectedArea } from "@domains/auth/components/ProtectedArea";
 import { AddGameForm } from "@domains/games/components/AddGameForm";
@@ -11,7 +10,6 @@ export function AppPrivateView() {
   return (
     <AuthPageShell>
       <div className="space-y-6">
-        <AuthAccessPanel variant="bar" />
         <ProtectedArea>
           <AddGameForm onSuccess={() => setListVersion((v) => v + 1)} />
           <CompletedGamesList key={listVersion} />
