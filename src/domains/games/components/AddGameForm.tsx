@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import { addGameForUser } from "@domains/games/services/completedGamesService";
+import { CoverPicker } from "@domains/games/components/CoverPicker";
 import type { NewGameInput } from "@domains/games/types/completedGame";
 import { Button, Input, Modal, ToastViewport, useToast } from "@shared/ui/primitives";
 
@@ -223,12 +224,12 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
           </Field>
 
           {/* Portada */}
-          <Field label="URL de portada" hint="Opcional">
-            <Input
-              type="url"
-              placeholder="https://..."
+          <Field label="Portada" hint="Opcional">
+            <CoverPicker
+              suggestedTitle={form.title}
               value={form.cover}
-              onChange={(e) => set("cover", e.target.value)}
+              onChange={(nextValue) => set("cover", nextValue)}
+              disabled={submitting}
             />
           </Field>
 

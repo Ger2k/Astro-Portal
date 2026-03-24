@@ -5,6 +5,7 @@ import {
   fetchCompletedGamesForUser,
   updateGameForUser,
 } from "@domains/games/services/completedGamesService";
+import { CoverPicker } from "@domains/games/components/CoverPicker";
 import type { CompletedGame, NewGameInput } from "@domains/games/types/completedGame";
 import {
   Button,
@@ -607,12 +608,12 @@ export function CompletedGamesList() {
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">URL de portada</label>
-            <Input
-              type="url"
+            <label className="block text-sm font-medium text-foreground">Portada</label>
+            <CoverPicker
+              suggestedTitle={editForm.title}
               value={editForm.cover}
-              onChange={(e) => setEditField("cover", e.target.value)}
-              placeholder="https://..."
+              onChange={(nextValue) => setEditField("cover", nextValue)}
+              disabled={editing}
             />
           </div>
 

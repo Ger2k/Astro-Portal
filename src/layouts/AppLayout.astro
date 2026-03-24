@@ -8,6 +8,20 @@ interface Props {
 
 const { title, description = "" } = Astro.props;
 const hasHeaderExtra = Astro.slots.has("header-extra");
+const currentPath = Astro.url.pathname;
+
+function navLinkClass(href: string) {
+  const isActive = href === "/"
+    ? currentPath === "/"
+    : currentPath === href || currentPath.startsWith(`${href}/`);
+
+  return [
+    "rounded-full px-3 py-1.5 transition-colors",
+    isActive
+      ? "bg-foreground text-background"
+      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+  ].join(" ");
+}
 ---
 
 <!doctype html>
@@ -21,15 +35,15 @@ const hasHeaderExtra = Astro.slots.has("header-extra");
   <body>
     <header class="sticky top-0 z-30 border-b border-border bg-[color-mix(in_oklab,var(--color-surface)_90%,white)] backdrop-blur">
       <div class="mx-auto w-full max-w-5xl px-4 py-3">
-        <div class="flex items-center justify-between gap-4">
-          <a href="/" class="font-semibold text-foreground">Portal Games Tracker</a>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <a href="/" class="text-sm font-semibold tracking-[0.18em] text-foreground uppercase">Portal Games Tracker</a>
           <nav aria-label="Principal">
-            <ul class="flex items-center gap-3 text-sm">
+            <ul class="flex items-center gap-2 text-sm">
               <li>
-                <a href="/" class="rounded px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground">Inicio</a>
+                <a href="/" class={navLinkClass("/")}>Inicio</a>
               </li>
               <li>
-                <a href="/app" class="rounded px-2 py-1 text-muted-foreground hover:bg-muted hover:text-foreground">App</a>
+                <a href="/app" class={navLinkClass("/app")}>App</a>
               </li>
             </ul>
           </nav>

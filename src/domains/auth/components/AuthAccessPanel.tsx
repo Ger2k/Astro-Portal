@@ -12,14 +12,36 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
   const isAuthenticated = status === "authenticated";
   const displayName = user?.displayName ?? user?.email ?? "usuario";
   const userInitial = displayName.trim().charAt(0).toUpperCase() || "U";
+  const photoUrl = user?.photoURL?.trim();
 
   if (variant === "bar") {
     return (
-      <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-3 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="rounded-2xl border border-border/70 bg-surface/80 px-3 py-3 shadow-sm backdrop-blur sm:px-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/12 text-sm font-semibold text-foreground">
-              {userInitial}
+            <div className="relative shrink-0">
+              {photoUrl ? (
+                <img
+                  src={photoUrl}
+                  alt={`Avatar de ${displayName}`}
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 rounded-full object-cover ring-1 ring-border"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/12 text-sm font-semibold text-foreground ring-1 ring-border">
+                  {userInitial}
+                </div>
+              )}
+
+              {isAuthenticated ? (
+                <span
+                  className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-emerald-500"
+                  aria-hidden="true"
+                />
+              ) : null}
             </div>
 
             <div className="min-w-0">
@@ -43,7 +65,7 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 lg:pl-4">
+          <div className="flex items-center gap-2 sm:pl-4">
             {!isAuthenticated ? (
               <Button onClick={loginWithGoogle} disabled={isBusy} size="sm">
                 {isBusy ? "Conectando..." : "Entrar con Google"}
