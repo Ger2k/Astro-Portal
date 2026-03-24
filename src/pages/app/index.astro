@@ -1,0 +1,19 @@
+---
+export const prerender = true;
+import AppLayout from "@/layouts/AppLayout.astro";
+import { AppPrivateView } from "@/domains/auth/components/AppPrivateView";
+---
+
+<AppLayout title="App | Portal Games Tracker" description="Zona privada con autenticacion Google">
+  <section class="space-y-6">
+    <header class="surface-card p-6">
+      <h1 class="text-2xl font-semibold">Bloque 2: Auth y sesion</h1>
+      <p class="mt-2 text-sm text-muted-foreground">
+        Esta vista queda bloqueada hasta iniciar sesion con Google.
+      </p>
+    </header>
+
+    <AppPrivateView client:load />
+  </section>
+</AppLayout>
+
