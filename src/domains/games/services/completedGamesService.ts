@@ -1,9 +1,13 @@
-import { ref, get } from "firebase/database";
+import { ref, get, push, set } from "firebase/database";
 import { getFirebaseDb } from "@config/firebase/client";
-import type { CompletedGame } from "@domains/games/types/completedGame";
+import type { CompletedGame, NewGameInput } from "@domains/games/types/completedGame";
 
 type CompletedGamesResult =
   | { ok: true; data: CompletedGame[] }
+  | { ok: false; errorMessage: string };
+
+type AddGameResult =
+  | { ok: true; id: string }
   | { ok: false; errorMessage: string };
 
 type RawGame = {
@@ -69,6 +73,37 @@ export async function fetchCompletedGamesForUser(userId: string): Promise<Comple
       error instanceof Error
         ? error.message
         : "No se pudo cargar la lista de juegos desde Firebase Realtime Database.";
+
+    return { ok: false, errorMessage };
+  }
+}
+
+export async function addGameForUser(userId: string, input: NewGameInput): Promise<AddGameResult> {
+  try {
+    const db = getFirebaseDb();
+    const gamesRef = ref(db, `users/${userId}/games`);
+    const itemRef = push(gamesRef);
+    const generatedId = itemRef.key ?? String(Date.now());
+
+    const payload: CompletedGame = {
+      id: generatedId,
+      title: input.title.trim(),
+      platform: input.platform.trim(),
+      date: input.date,
+      score: input.score,
+      hours: input.hours,
+      cover: input.cover.trim(),
+      notes: input.notes.trim(),
+    };
+
+    await set(itemRef, payload);
+
+    return { ok: true, id: payload.id };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "No se pudo guardar el juego en Firebase Realtime Database.";
 
     return { ok: false, errorMessage };
   }

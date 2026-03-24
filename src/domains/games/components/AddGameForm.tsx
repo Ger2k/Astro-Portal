@@ -3,7 +3,6 @@ import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import { addGameForUser } from "@domains/games/services/completedGamesService";
 import type { NewGameInput } from "@domains/games/types/completedGame";
 import { Button, Input, Modal, ToastViewport, useToast } from "@shared/ui/primitives";
-import { CoverPicker } from "@domains/games/components/CoverPicker";
 
 const PLATFORM_OPTIONS = [
   "PC",
@@ -83,7 +82,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
     const platformValue = isCustomPlatform ? customPlatform.trim() : form.platform;
 
     if (!form.title.trim()) {
-      setError("El t├¡tulo es obligatorio.");
+      setError("El titulo es obligatorio.");
       return;
     }
     if (!platformValue) {
@@ -95,31 +94,19 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
       return;
     }
     if (form.score !== null && (form.score < 0 || form.score > 100)) {
-      setError("La puntuaci├│n debe estar entre 0 y 100.");
+      setError("La puntuacion debe estar entre 0 y 100.");
       return;
     }
 
     setSubmitting(true);
     setError(null);
 
-    let cover = form.cover.trim();
-    if (!cover.startsWith("https://")) cover = "";
-    if (!cover) {
-      try {
-        const res = await fetch(`/api/rawg-cover?title=${encodeURIComponent(form.title.trim())}`);
-        const data = (await res.json()) as { images?: string[] };
-        cover = data.images?.[0] ?? "";
-      } catch {
-        cover = "";
-      }
-    }
-
     const result = await addGameForUser(user.uid, {
       ...form,
       title: form.title.trim(),
       platform: platformValue,
       notes: form.notes.trim(),
-      cover,
+      cover: form.cover.trim(),
     });
 
     setSubmitting(false);
@@ -139,8 +126,8 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
     setIsOpen(false);
     push({
       variant: "success",
-      title: "Juego a├▒adido",
-      description: "El juego se guard├│ correctamente.",
+      title: "Juego anadido",
+      description: "El juego se guardo correctamente.",
     });
     onSuccess();
   }
@@ -153,13 +140,12 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
 
       <Modal
         isOpen={isOpen}
-        title="A├▒adir juego completado"
+        title="Anadir juego completado"
         onClose={handleCancel}
-        showCloseButton={false}
       >
         <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} noValidate className="space-y-4">
-          {/* T├¡tulo */}
-          <Field label="T├¡tulo" required>
+          {/* Titulo */}
+          <Field label="Titulo" required>
             <Input
               type="text"
               placeholder="Ej. Elden Ring"
@@ -197,14 +183,14 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
           <Field label="Fecha completado" required>
             <Input
               type="date"
-              value={form.date}
+              value={form.date ?? ""}
               max={todayISO()}
               onChange={(e) => set("date", e.target.value)}
             />
           </Field>
 
-          {/* Puntuaci├│n slider */}
-          <Field label="Puntuaci├│n">
+          {/* Puntuacion slider */}
+          <Field label="Puntuacion">
             <div className="flex items-center gap-3">
               <input
                 type="range"
@@ -213,7 +199,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
                 value={form.score ?? 0}
                 onChange={(e) => set("score", Number(e.target.value))}
                 className="flex-1 accent-primary"
-                aria-label={`Puntuaci├│n: ${form.score ?? 0} de 100`}
+                aria-label={`Puntuacion: ${form.score ?? 0} de 100`}
               />
               <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
                 {form.score ?? 0}
@@ -236,8 +222,13 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
           </Field>
 
           {/* Portada */}
-          <Field label="Portada" hint="Opcional ÔÇö busca autom├íticamente al guardar o pega una URL">
-            <CoverPicker title={form.title} value={form.cover} onChange={(url) => set("cover", url)} />
+          <Field label="URL de portada" hint="Opcional">
+            <Input
+              type="url"
+              placeholder="https://..."
+              value={form.cover}
+              onChange={(e) => set("cover", e.target.value)}
+            />
           </Field>
 
           {/* Notas */}
