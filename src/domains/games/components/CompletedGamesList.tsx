@@ -15,6 +15,8 @@ import {
   CardTitle,
   Input,
   Modal,
+  ToastViewport,
+  useToast,
 } from "@shared/ui/primitives";
 
 const PLATFORM_OPTIONS = [
@@ -135,6 +137,7 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
 
 export function CompletedGamesList() {
   const { user } = useAuthSession();
+  const { toasts, push, dismiss } = useToast();
   const [games, setGames] = useState<CompletedGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -178,6 +181,11 @@ export function CompletedGamesList() {
       setGames([]);
       setErrorMessage(result.errorMessage);
       setLoading(false);
+      push({
+        variant: "error",
+        title: "No se pudo cargar la lista",
+        description: result.errorMessage,
+      });
       return;
     }
 
@@ -200,10 +208,20 @@ export function CompletedGamesList() {
     if (!result.ok) {
       setErrorMessage(result.errorMessage);
       setDeleting(false);
+      push({
+        variant: "error",
+        title: "No se pudo eliminar",
+        description: result.errorMessage,
+      });
       return;
     }
 
     setGames((prev) => prev.filter((g) => g.nodeKey !== pendingDelete.nodeKey));
+    push({
+      variant: "success",
+      title: "Juego eliminado",
+      description: `Se elimino \"${pendingDelete.title}\" correctamente.`,
+    });
     setPendingDelete(null);
     setDeleting(false);
   }
@@ -331,6 +349,11 @@ export function CompletedGamesList() {
     if (!result.ok) {
       setEditError(result.errorMessage);
       setEditing(false);
+      push({
+        variant: "error",
+        title: "No se pudo guardar",
+        description: result.errorMessage,
+      });
       return;
     }
 
@@ -345,6 +368,11 @@ export function CompletedGamesList() {
       ),
     );
 
+    push({
+      variant: "success",
+      title: "Juego actualizado",
+      description: `Se actualizo \"${payload.title}\" correctamente.`,
+    });
     setEditing(false);
     setPendingEdit(null);
   }
@@ -647,6 +675,8 @@ export function CompletedGamesList() {
           </Button>
         </div>
       </Modal>
+
+      <ToastViewport toasts={toasts} onDismiss={dismiss} />
     </Card>
   );
 }
