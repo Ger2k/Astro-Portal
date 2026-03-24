@@ -1,4 +1,4 @@
-import { ref, get, push, set } from "firebase/database";
+import { ref, get, push, set, remove } from "firebase/database";
 import { getFirebaseDb } from "@config/firebase/client";
 import type { CompletedGame, NewGameInput } from "@domains/games/types/completedGame";
 
@@ -8,6 +8,10 @@ type CompletedGamesResult =
 
 type AddGameResult =
   | { ok: true; id: string }
+  | { ok: false; errorMessage: string };
+
+type DeleteGameResult =
+  | { ok: true }
   | { ok: false; errorMessage: string };
 
 type RawGame = {
@@ -22,22 +26,23 @@ type RawGame = {
 };
 
 /**
- * RTDB puede devolver un array real o un objeto con claves numericas.
- * Ambos casos se normalizan a un array plano de objetos.
+ * RTDB puede devolver objeto con keys push o indices numericos.
+ * Se normaliza conservando la key real del nodo para operar (editar/eliminar).
  */
-function normalizeGamesData(raw: unknown): RawGame[] {
+function normalizeGamesData(raw: unknown): Array<{ nodeKey: string; raw: RawGame }> {
   if (!raw || typeof raw !== "object") {
     return [];
   }
 
-  return Object.values(raw as Record<string, unknown>).filter(
-    (v): v is RawGame => v !== null && typeof v === "object",
-  );
+  return Object.entries(raw as Record<string, unknown>)
+    .filter(([, value]) => value !== null && typeof value === "object")
+    .map(([nodeKey, value]) => ({ nodeKey, raw: value as RawGame }));
 }
 
-function mapToCompletedGame(raw: RawGame, index: number): CompletedGame {
+function mapToCompletedGame(raw: RawGame, nodeKey: string): CompletedGame {
   return {
-    id: typeof raw.id === "string" ? raw.id : String(index),
+    nodeKey,
+    id: typeof raw.id === "string" ? raw.id : nodeKey,
     title: typeof raw.title === "string" && raw.title ? raw.title : "Juego sin titulo",
     platform: typeof raw.platform === "string" ? raw.platform : "",
     date: typeof raw.date === "string" && raw.date ? raw.date : null,
@@ -60,7 +65,7 @@ export async function fetchCompletedGamesForUser(userId: string): Promise<Comple
 
     const rawGames = normalizeGamesData(snapshot.val());
     const data = rawGames
-      .map((raw, i) => mapToCompletedGame(raw, i))
+      .map((entry) => mapToCompletedGame(entry.raw, entry.nodeKey))
       .sort((a, b) => {
         const aTime = a.date ? Date.parse(a.date) : 0;
         const bTime = b.date ? Date.parse(b.date) : 0;
@@ -86,6 +91,7 @@ export async function addGameForUser(userId: string, input: NewGameInput): Promi
     const generatedId = itemRef.key ?? String(Date.now());
 
     const payload: CompletedGame = {
+      nodeKey: generatedId,
       id: generatedId,
       title: input.title.trim(),
       platform: input.platform.trim(),
@@ -104,6 +110,22 @@ export async function addGameForUser(userId: string, input: NewGameInput): Promi
       error instanceof Error
         ? error.message
         : "No se pudo guardar el juego en Firebase Realtime Database.";
+
+    return { ok: false, errorMessage };
+  }
+}
+
+export async function deleteGameForUser(userId: string, nodeKey: string): Promise<DeleteGameResult> {
+  try {
+    const db = getFirebaseDb();
+    const gameRef = ref(db, `users/${userId}/games/${nodeKey}`);
+    await remove(gameRef);
+    return { ok: true };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "No se pudo eliminar el juego de Firebase Realtime Database.";
 
     return { ok: false, errorMessage };
   }

@@ -1,4 +1,5 @@
 export interface CompletedGame {
+  nodeKey: string;
   id: string;
   title: string;
   platform: string;

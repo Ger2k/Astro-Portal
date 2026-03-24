@@ -1,8 +1,19 @@
 import { useEffect, useState } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
-import { fetchCompletedGamesForUser } from "@domains/games/services/completedGamesService";
+import {
+  deleteGameForUser,
+  fetchCompletedGamesForUser,
+} from "@domains/games/services/completedGamesService";
 import type { CompletedGame } from "@domains/games/types/completedGame";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@shared/ui/primitives";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Modal,
+} from "@shared/ui/primitives";
 
 function formatDate(isoDate: string | null) {
   if (!isoDate) return "Fecha no disponible";
@@ -31,7 +42,12 @@ function ScoreBadge({ score }: { score: number | null }) {
   );
 }
 
-function GameCard({ game }: { game: CompletedGame }) {
+interface GameCardProps {
+  game: CompletedGame;
+  onDelete: (game: CompletedGame) => void;
+}
+
+function GameCard({ game, onDelete }: GameCardProps) {
   return (
     <li className="flex gap-4 rounded-lg border border-border bg-surface p-4">
       {game.cover ? (
@@ -40,12 +56,12 @@ function GameCard({ game }: { game: CompletedGame }) {
           alt={`Portada de ${game.title}`}
           width={56}
           height={80}
-          className="h-20 w-14 flex-shrink-0 rounded object-cover"
+          className="h-20 w-14 shrink-0 rounded object-cover"
           loading="lazy"
         />
       ) : (
         <div
-          className="flex h-20 w-14 flex-shrink-0 items-center justify-center rounded bg-muted text-2xl"
+          className="flex h-20 w-14 shrink-0 items-center justify-center rounded bg-muted text-2xl"
           aria-hidden="true"
         >
           🎮
@@ -74,6 +90,17 @@ function GameCard({ game }: { game: CompletedGame }) {
             {game.notes}
           </p>
         ) : null}
+
+        <div className="pt-2">
+          <Button
+            type="button"
+            variant="secondary"
+            className="h-8 px-3 text-xs"
+            onClick={() => onDelete(game)}
+          >
+            Eliminar
+          </Button>
+        </div>
       </div>
     </li>
   );
@@ -84,6 +111,8 @@ export function CompletedGamesList() {
   const [games, setGames] = useState<CompletedGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<CompletedGame | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadGames = async () => {
     if (!user) {
@@ -112,6 +141,25 @@ export function CompletedGamesList() {
   useEffect(() => {
     void loadGames();
   }, [user?.uid]);
+
+  async function confirmDelete() {
+    if (!user || !pendingDelete) return;
+
+    setDeleting(true);
+    setErrorMessage(null);
+
+    const result = await deleteGameForUser(user.uid, pendingDelete.nodeKey);
+
+    if (!result.ok) {
+      setErrorMessage(result.errorMessage);
+      setDeleting(false);
+      return;
+    }
+
+    setGames((prev) => prev.filter((g) => g.nodeKey !== pendingDelete.nodeKey));
+    setPendingDelete(null);
+    setDeleting(false);
+  }
 
   return (
     <Card>
@@ -152,11 +200,38 @@ export function CompletedGamesList() {
         {!loading && !errorMessage && games.length > 0 ? (
           <ul className="space-y-3" aria-label="Lista de juegos completados">
             {games.map((game) => (
-              <GameCard key={game.id} game={game} />
+              <GameCard key={game.nodeKey} game={game} onDelete={setPendingDelete} />
             ))}
           </ul>
         ) : null}
       </CardContent>
+
+      <Modal
+        isOpen={Boolean(pendingDelete)}
+        title="Confirmar eliminacion"
+        description={
+          pendingDelete
+            ? `Se eliminara \"${pendingDelete.title}\". Esta accion no se puede deshacer.`
+            : undefined
+        }
+        onClose={() => {
+          if (!deleting) setPendingDelete(null);
+        }}
+      >
+        <div className="flex justify-end gap-3">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setPendingDelete(null)}
+            disabled={deleting}
+          >
+            Cancelar
+          </Button>
+          <Button type="button" onClick={() => void confirmDelete()} disabled={deleting}>
+            {deleting ? "Eliminando..." : "Eliminar"}
+          </Button>
+        </div>
+      </Modal>
     </Card>
   );
 }
