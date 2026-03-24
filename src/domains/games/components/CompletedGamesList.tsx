@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import {
   deleteGameForUser,
@@ -138,6 +138,9 @@ export function CompletedGamesList() {
   const [games, setGames] = useState<CompletedGame[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [platformFilter, setPlatformFilter] = useState("Todas");
+  const [sortBy, setSortBy] = useState("recent");
 
   const [pendingDelete, setPendingDelete] = useState<CompletedGame | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -224,6 +227,56 @@ export function CompletedGamesList() {
     setEditForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  const availablePlatforms = useMemo(() => {
+    const values = Array.from(
+      new Set(games.map((game) => game.platform.trim()).filter(Boolean)),
+    ).sort((a, b) => a.localeCompare(b, "es"));
+
+    return ["Todas", ...values];
+  }, [games]);
+
+  const visibleGames = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    const filtered = games.filter((game) => {
+      const matchesPlatform = platformFilter === "Todas" || game.platform === platformFilter;
+
+      if (!matchesPlatform) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      const haystack = [game.title, game.platform, game.notes]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(normalizedSearch);
+    });
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "oldest") {
+        const aTime = a.date ? Date.parse(a.date) : 0;
+        const bTime = b.date ? Date.parse(b.date) : 0;
+        return aTime - bTime;
+      }
+
+      if (sortBy === "score") {
+        return (b.score ?? -1) - (a.score ?? -1);
+      }
+
+      if (sortBy === "hours") {
+        return (b.hours ?? -1) - (a.hours ?? -1);
+      }
+
+      const aTime = a.date ? Date.parse(a.date) : 0;
+      const bTime = b.date ? Date.parse(b.date) : 0;
+      return bTime - aTime;
+    });
+  }, [games, platformFilter, search, sortBy]);
+
   async function confirmEdit() {
     if (!user || !pendingEdit) return;
 
@@ -293,7 +346,7 @@ export function CompletedGamesList() {
             <CardDescription>
               {loading
                 ? "Cargando desde Firebase..."
-                : `${games.length} juego${games.length !== 1 ? "s" : ""} completado${games.length !== 1 ? "s" : ""}`}
+                : `${visibleGames.length} juego${visibleGames.length !== 1 ? "s" : ""} visible${visibleGames.length !== 1 ? "s" : ""} de ${games.length}`}
             </CardDescription>
           </div>
 
@@ -304,6 +357,41 @@ export function CompletedGamesList() {
       </CardHeader>
 
       <CardContent>
+        <div className="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_220px_220px]">
+          <Input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por titulo, plataforma o notas"
+            aria-label="Buscar juegos"
+          />
+
+          <select
+            className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            value={platformFilter}
+            onChange={(e) => setPlatformFilter(e.target.value)}
+            aria-label="Filtrar por plataforma"
+          >
+            {availablePlatforms.map((platform) => (
+              <option key={platform} value={platform}>
+                {platform}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            aria-label="Ordenar juegos"
+          >
+            <option value="recent">Mas recientes</option>
+            <option value="oldest">Mas antiguos</option>
+            <option value="score">Mejor puntuacion</option>
+            <option value="hours">Mas horas</option>
+          </select>
+        </div>
+
         {loading ? (
           <p className="text-sm text-muted-foreground">Cargando juegos...</p>
         ) : null}
@@ -320,9 +408,15 @@ export function CompletedGamesList() {
           </p>
         ) : null}
 
-        {!loading && !errorMessage && games.length > 0 ? (
+        {!loading && !errorMessage && games.length > 0 && visibleGames.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No hay resultados con los filtros actuales.
+          </p>
+        ) : null}
+
+        {!loading && !errorMessage && visibleGames.length > 0 ? (
           <ul className="space-y-3" aria-label="Lista de juegos completados">
-            {games.map((game) => (
+            {visibleGames.map((game) => (
               <GameCard
                 key={game.nodeKey}
                 game={game}
