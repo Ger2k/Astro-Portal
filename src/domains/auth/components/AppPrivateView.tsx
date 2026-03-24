@@ -11,8 +11,16 @@ export function AppPrivateView() {
     <AuthPageShell>
       <div className="space-y-6">
         <ProtectedArea>
-          <AddGameForm onSuccess={() => setListVersion((v) => v + 1)} />
-          <CompletedGamesList key={listVersion} />
+          <CompletedGamesList
+            key={listVersion}
+            addGameAction={
+              <AddGameForm
+                onSuccess={() => setListVersion((v) => v + 1)}
+                triggerVariant="primary"
+                triggerSize="md"
+              />
+            }
+          />
         </ProtectedArea>
       </div>
     </AuthPageShell>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import {
   deleteGameForUser,
@@ -11,7 +11,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   Input,
@@ -71,60 +70,64 @@ interface GameCardProps {
 
 function GameCard({ game, onDelete, onEdit }: GameCardProps) {
   return (
-    <li className="flex gap-4 rounded-lg border border-border bg-surface p-4">
+    <li className="flex items-start gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm">
       {game.cover ? (
-        <img
-          src={game.cover}
-          alt={`Portada de ${game.title}`}
-          width={56}
-          height={80}
-          className="h-20 w-14 shrink-0 rounded object-cover"
-          loading="lazy"
-        />
+        <div className="overflow-hidden rounded-lg ring-1 ring-border/80 shadow-sm">
+          <img
+            src={game.cover}
+            alt={`Portada de ${game.title}`}
+            width={56}
+            height={80}
+            className="h-20 w-14 shrink-0 object-cover"
+            loading="lazy"
+          />
+        </div>
       ) : (
         <div
-          className="flex h-20 w-14 shrink-0 items-center justify-center rounded bg-muted text-2xl"
+          className="flex h-20 w-14 shrink-0 items-center justify-center rounded-lg bg-muted text-2xl ring-1 ring-border/80"
           aria-hidden="true"
         >
           🎮
         </div>
       )}
 
-      <div className="min-w-0 flex-1 space-y-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-foreground">{game.title}</p>
-          <ScoreBadge score={game.score} />
+      <div className="flex min-w-0 flex-1 flex-col gap-3 self-stretch">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-semibold text-foreground">{game.title}</p>
+            <ScoreBadge score={game.score} />
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            {game.platform || "Plataforma no especificada"}
+          </p>
+
+          <p className="text-xs text-muted-foreground">
+            <span>Completado: {formatDate(game.date)}</span>
+            {game.hours !== null ? (
+              <span className="ml-3">{game.hours} h jugadas</span>
+            ) : null}
+          </p>
+
+          {game.notes ? (
+            <p className="pt-1 line-clamp-2 text-sm italic text-muted-foreground">
+              {game.notes}
+            </p>
+          ) : null}
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          {game.platform || "Plataforma no especificada"}
-        </p>
-
-        <p className="text-xs text-muted-foreground">
-          <span>Completado: {formatDate(game.date)}</span>
-          {game.hours !== null ? (
-            <span className="ml-3">{game.hours} h jugadas</span>
-          ) : null}
-        </p>
-
-        {game.notes ? (
-          <p className="mt-1 line-clamp-2 text-sm italic text-muted-foreground">
-            {game.notes}
-          </p>
-        ) : null}
-
-        <div className="pt-2">
+        <div className="mt-auto flex flex-wrap gap-2 pt-1">
           <Button
             type="button"
             variant="secondary"
-            className="mr-2 h-8 px-3 text-xs"
+            className="h-8 px-3 text-xs"
             onClick={() => onEdit(game)}
           >
             Editar
           </Button>
           <Button
             type="button"
-            variant="secondary"
+            variant="outline"
             className="h-8 px-3 text-xs"
             onClick={() => onDelete(game)}
           >
@@ -136,7 +139,11 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
   );
 }
 
-export function CompletedGamesList() {
+interface CompletedGamesListProps {
+  addGameAction?: ReactNode;
+}
+
+export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
   const { user } = useAuthSession();
   const { toasts, push, dismiss } = useToast();
   const [games, setGames] = useState<CompletedGame[]>([]);
@@ -221,7 +228,7 @@ export function CompletedGamesList() {
     push({
       variant: "success",
       title: "Juego eliminado",
-      description: `Se elimino \"${pendingDelete.title}\" correctamente.`,
+      description: `Se elimino "${pendingDelete.title}" correctamente.`,
     });
     setPendingDelete(null);
     setDeleting(false);
@@ -372,7 +379,7 @@ export function CompletedGamesList() {
     push({
       variant: "success",
       title: "Juego actualizado",
-      description: `Se actualizo \"${payload.title}\" correctamente.`,
+      description: `Se actualizo "${payload.title}" correctamente.`,
     });
     setEditing(false);
     setPendingEdit(null);
@@ -384,16 +391,14 @@ export function CompletedGamesList() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <CardTitle>Juegos completados</CardTitle>
-            <CardDescription>
-              {loading
-                ? "Cargando desde Firebase..."
-                : `${visibleGames.length} juego${visibleGames.length !== 1 ? "s" : ""} visible${visibleGames.length !== 1 ? "s" : ""} de ${games.length}`}
-            </CardDescription>
           </div>
 
-          <Button variant="secondary" onClick={() => void loadGames()} disabled={loading}>
-            {loading ? "Actualizando..." : "Actualizar"}
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {addGameAction}
+            <Button variant="secondary" onClick={() => void loadGames()} disabled={loading}>
+              {loading ? "Actualizando..." : "Actualizar"}
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
@@ -656,7 +661,7 @@ export function CompletedGamesList() {
         title="Confirmar eliminación"
         description={
           pendingDelete
-            ? `Se eliminara \"${pendingDelete.title}\". Esta accion no se puede deshacer.`
+            ? `Se eliminara "${pendingDelete.title}". Esta accion no se puede deshacer.`
             : undefined
         }
         onClose={() => {

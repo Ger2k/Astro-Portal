@@ -53,9 +53,15 @@ function Field({ label, required, children, hint }: FieldProps) {
 
 interface AddGameFormProps {
   onSuccess: () => void;
+  triggerVariant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  triggerSize?: "sm" | "md" | "lg";
 }
 
-export function AddGameForm({ onSuccess }: AddGameFormProps) {
+export function AddGameForm({
+  onSuccess,
+  triggerVariant = "primary",
+  triggerSize = "md",
+}: AddGameFormProps) {
   const { user } = useAuthSession();
   const { toasts, push, dismiss } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -135,9 +141,9 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
 
   return (
     <>
-      <div className="flex justify-end">
-        <Button onClick={() => setIsOpen(true)}>+ Añadir juego</Button>
-      </div>
+      <Button onClick={() => setIsOpen(true)} variant={triggerVariant} size={triggerSize}>
+        + Añadir juego
+      </Button>
 
       <Modal
         isOpen={isOpen}

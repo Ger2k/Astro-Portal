@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   Input,
@@ -23,7 +22,6 @@ export default function ComponentShowcase() {
         <Card>
           <CardHeader>
             <CardTitle>Botones</CardTitle>
-            <CardDescription>Variantes y estados para acciones primarias y secundarias.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
@@ -40,7 +38,6 @@ export default function ComponentShowcase() {
         <Card>
           <CardHeader>
             <CardTitle>Formulario base</CardTitle>
-            <CardDescription>Inputs tipados, select accesible y estado de error.</CardDescription>
           </CardHeader>
           <CardContent>
             <label className="block space-y-1">
@@ -67,7 +64,6 @@ export default function ComponentShowcase() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Modal y Toast</CardTitle>
-            <CardDescription>Feedback de acciones sin bloquear el flujo de interfaz.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">

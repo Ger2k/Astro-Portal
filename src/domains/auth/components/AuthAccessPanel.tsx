@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@shared/ui/primitives";
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@shared/ui/primitives";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 
 interface AuthAccessPanelProps {
@@ -94,11 +94,6 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
     <Card className="max-w-xl">
       <CardHeader>
         <CardTitle>Sesión</CardTitle>
-        <CardDescription>
-          {isAuthenticated
-            ? "Tu sesión está activa."
-            : "Necesitas iniciar sesión con Google para usar funciones privadas."}
-        </CardDescription>
       </CardHeader>
 
       <CardContent>
