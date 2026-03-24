@@ -126,8 +126,8 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
     setIsOpen(false);
     push({
       variant: "success",
-      title: "Juego anadido",
-      description: "El juego se guardo correctamente.",
+      title: "Juego añadido",
+      description: "El juego se guardó correctamente.",
     });
     onSuccess();
   }
@@ -135,13 +135,14 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
   return (
     <>
       <div className="flex justify-end">
-        <Button onClick={() => setIsOpen(true)}>+ A├▒adir juego</Button>
+        <Button onClick={() => setIsOpen(true)}>+ Añadir juego</Button>
       </div>
 
       <Modal
         isOpen={isOpen}
-        title="Anadir juego completado"
+        title="Añadir juego completado"
         onClose={handleCancel}
+        showCloseButton={false}
       >
         <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} noValidate className="space-y-4">
           {/* Titulo */}

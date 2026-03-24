@@ -8,9 +8,17 @@ interface ModalProps {
   description?: string;
   onClose: () => void;
   children?: ReactNode;
+  showCloseButton?: boolean;
 }
 
-export function Modal({ isOpen, title, description, onClose, children }: ModalProps) {
+export function Modal({
+  isOpen,
+  title,
+  description,
+  onClose,
+  children,
+  showCloseButton = true,
+}: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
@@ -55,11 +63,13 @@ export function Modal({ isOpen, title, description, onClose, children }: ModalPr
 
         <div className="mt-4">{children}</div>
 
-        <div className="mt-6 flex justify-end">
-          <Button variant="secondary" onClick={onClose}>
-            Cerrar
-          </Button>
-        </div>
+        {showCloseButton ? (
+          <div className="mt-6 flex justify-end">
+            <Button variant="secondary" onClick={onClose}>
+              Cerrar
+            </Button>
+          </div>
+        ) : null}
       </section>
     </div>
   );

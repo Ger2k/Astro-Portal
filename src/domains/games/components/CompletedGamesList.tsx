@@ -217,6 +217,7 @@ export function CompletedGamesList() {
         onClose={() => {
           if (!deleting) setPendingDelete(null);
         }}
+        showCloseButton={false}
       >
         <div className="flex justify-end gap-3">
           <Button
