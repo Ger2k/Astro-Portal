@@ -141,6 +141,8 @@ export function CompletedGamesList() {
   const [search, setSearch] = useState("");
   const [platformFilter, setPlatformFilter] = useState("Todas");
   const [sortBy, setSortBy] = useState("recent");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   const [pendingDelete, setPendingDelete] = useState<CompletedGame | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -277,6 +279,16 @@ export function CompletedGamesList() {
     });
   }, [games, platformFilter, search, sortBy]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [pageSize, platformFilter, search, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(visibleGames.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageStart = visibleGames.length === 0 ? 0 : (currentPage - 1) * pageSize;
+  const pageEnd = Math.min(pageStart + pageSize, visibleGames.length);
+  const paginatedGames = visibleGames.slice(pageStart, pageEnd);
+
   async function confirmEdit() {
     if (!user || !pendingEdit) return;
 
@@ -392,6 +404,30 @@ export function CompletedGamesList() {
           </select>
         </div>
 
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            {visibleGames.length > 0
+              ? `Mostrando ${pageStart + 1}-${pageEnd} de ${visibleGames.length}`
+              : "Mostrando 0 resultados"}
+          </p>
+
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-muted-foreground" htmlFor="page-size">
+              Por pagina
+            </label>
+            <select
+              id="page-size"
+              className="h-10 rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+        </div>
+
         {loading ? (
           <p className="text-sm text-muted-foreground">Cargando juegos...</p>
         ) : null}
@@ -416,7 +452,7 @@ export function CompletedGamesList() {
 
         {!loading && !errorMessage && visibleGames.length > 0 ? (
           <ul className="space-y-3" aria-label="Lista de juegos completados">
-            {visibleGames.map((game) => (
+            {paginatedGames.map((game) => (
               <GameCard
                 key={game.nodeKey}
                 game={game}
@@ -425,6 +461,30 @@ export function CompletedGamesList() {
               />
             ))}
           </ul>
+        ) : null}
+
+        {!loading && !errorMessage && visibleGames.length > pageSize ? (
+          <div className="mt-5 flex items-center justify-end gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Pagina {currentPage} de {totalPages}
+            </span>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Siguiente
+            </Button>
+          </div>
         ) : null}
       </CardContent>
 
