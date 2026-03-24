@@ -1,4 +1,4 @@
-import { ref, get, push, set, remove } from "firebase/database";
+import { ref, get, push, set, remove, update } from "firebase/database";
 import { getFirebaseDb } from "@config/firebase/client";
 import type { CompletedGame, NewGameInput } from "@domains/games/types/completedGame";
 
@@ -11,6 +11,10 @@ type AddGameResult =
   | { ok: false; errorMessage: string };
 
 type DeleteGameResult =
+  | { ok: true }
+  | { ok: false; errorMessage: string };
+
+type UpdateGameResult =
   | { ok: true }
   | { ok: false; errorMessage: string };
 
@@ -126,6 +130,39 @@ export async function deleteGameForUser(userId: string, nodeKey: string): Promis
       error instanceof Error
         ? error.message
         : "No se pudo eliminar el juego de Firebase Realtime Database.";
+
+    return { ok: false, errorMessage };
+  }
+}
+
+export async function updateGameForUser(
+  userId: string,
+  nodeKey: string,
+  input: NewGameInput,
+): Promise<UpdateGameResult> {
+  try {
+    const db = getFirebaseDb();
+    const gameRef = ref(db, `users/${userId}/games/${nodeKey}`);
+
+    const payload: Omit<CompletedGame, "nodeKey"> = {
+      id: nodeKey,
+      title: input.title.trim(),
+      platform: input.platform.trim(),
+      date: input.date,
+      score: input.score,
+      hours: input.hours,
+      cover: input.cover.trim(),
+      notes: input.notes.trim(),
+    };
+
+    await update(gameRef, payload);
+
+    return { ok: true };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "No se pudo actualizar el juego en Firebase Realtime Database.";
 
     return { ok: false, errorMessage };
   }
