@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import { addGameForUser } from "@domains/games/services/completedGamesService";
 import type { NewGameInput } from "@domains/games/types/completedGame";
@@ -83,7 +83,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
     const platformValue = isCustomPlatform ? customPlatform.trim() : form.platform;
 
     if (!form.title.trim()) {
-      setError("El título es obligatorio.");
+      setError("El t├¡tulo es obligatorio.");
       return;
     }
     if (!platformValue) {
@@ -95,7 +95,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
       return;
     }
     if (form.score !== null && (form.score < 0 || form.score > 100)) {
-      setError("La puntuación debe estar entre 0 y 100.");
+      setError("La puntuaci├│n debe estar entre 0 y 100.");
       return;
     }
 
@@ -139,8 +139,8 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
     setIsOpen(false);
     push({
       variant: "success",
-      title: "Juego añadido",
-      description: "El juego se guardó correctamente.",
+      title: "Juego a├▒adido",
+      description: "El juego se guard├│ correctamente.",
     });
     onSuccess();
   }
@@ -148,18 +148,18 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
   return (
     <>
       <div className="flex justify-end">
-        <Button onClick={() => setIsOpen(true)}>+ Añadir juego</Button>
+        <Button onClick={() => setIsOpen(true)}>+ A├▒adir juego</Button>
       </div>
 
       <Modal
         isOpen={isOpen}
-        title="Añadir juego completado"
+        title="A├▒adir juego completado"
         onClose={handleCancel}
         showCloseButton={false}
       >
         <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} noValidate className="space-y-4">
-          {/* Título */}
-          <Field label="Título" required>
+          {/* T├¡tulo */}
+          <Field label="T├¡tulo" required>
             <Input
               type="text"
               placeholder="Ej. Elden Ring"
@@ -203,8 +203,8 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
             />
           </Field>
 
-          {/* Puntuación slider */}
-          <Field label="Puntuación">
+          {/* Puntuaci├│n slider */}
+          <Field label="Puntuaci├│n">
             <div className="flex items-center gap-3">
               <input
                 type="range"
@@ -213,7 +213,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
                 value={form.score ?? 0}
                 onChange={(e) => set("score", Number(e.target.value))}
                 className="flex-1 accent-primary"
-                aria-label={`Puntuación: ${form.score ?? 0} de 100`}
+                aria-label={`Puntuaci├│n: ${form.score ?? 0} de 100`}
               />
               <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
                 {form.score ?? 0}
@@ -236,7 +236,7 @@ export function AddGameForm({ onSuccess }: AddGameFormProps) {
           </Field>
 
           {/* Portada */}
-          <Field label="Portada" hint="Opcional — busca automáticamente al guardar o pega una URL">
+          <Field label="Portada" hint="Opcional ÔÇö busca autom├íticamente al guardar o pega una URL">
             <CoverPicker title={form.title} value={form.cover} onChange={(url) => set("cover", url)} />
           </Field>
 
