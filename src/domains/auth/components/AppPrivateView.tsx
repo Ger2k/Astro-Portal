@@ -11,7 +11,7 @@ export function AppPrivateView() {
   return (
     <AuthPageShell>
       <div className="space-y-6">
-        <AuthAccessPanel />
+        <AuthAccessPanel variant="bar" />
         <ProtectedArea>
           <AddGameForm onSuccess={() => setListVersion((v) => v + 1)} />
           <CompletedGamesList key={listVersion} />
