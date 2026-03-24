@@ -38,7 +38,7 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
 
               {isAuthenticated ? (
                 <span
-                  className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-emerald-500"
+                  className="state-success-dot absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface"
                   aria-hidden="true"
                 />
               ) : null}
@@ -79,9 +79,9 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
         </div>
 
         {errorMessage ? (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-danger bg-red-50 px-3 py-2 text-sm text-red-900">
+          <div className="state-danger-panel mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm">
             <p>{errorMessage}</p>
-            <button type="button" className="underline" onClick={clearError}>
+            <button type="button" className="state-panel-action rounded px-1 py-0.5 underline" onClick={clearError}>
               Ocultar
             </button>
           </div>
@@ -104,9 +104,9 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
         ) : null}
 
         {errorMessage ? (
-          <div className="mt-3 rounded-md border border-danger bg-red-50 px-3 py-2 text-sm text-red-900">
+          <div className="state-danger-panel mt-3 rounded-md border px-3 py-2 text-sm">
             <p>{errorMessage}</p>
-            <button type="button" className="mt-1 underline" onClick={clearError}>
+            <button type="button" className="state-panel-action mt-1 rounded px-1 py-0.5 underline" onClick={clearError}>
               Ocultar mensaje
             </button>
           </div>

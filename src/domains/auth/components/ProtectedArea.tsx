@@ -29,7 +29,7 @@ export function ProtectedArea({ children }: ProtectedAreaProps) {
           <p className="text-sm text-muted-foreground">
             Debes iniciar sesión con Google para abrir esta sección privada.
           </p>
-          {errorMessage ? <p className="mt-2 text-sm text-red-700">{errorMessage}</p> : null}
+          {errorMessage ? <p className="state-error-text mt-2 text-sm">{errorMessage}</p> : null}
         </CardContent>
       </Card>
     );

@@ -8,9 +8,8 @@ const toastVariants = cva(
     variants: {
       variant: {
         info: "border-[color:var(--color-border)] bg-[color:var(--color-surface)] text-[color:var(--color-foreground)]",
-        success:
-          "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-700 dark:bg-emerald-900/30",
-        error: "border-red-300 bg-red-50 text-red-900 dark:border-red-700 dark:bg-red-900/30",
+        success: "state-success-panel",
+        error: "state-danger-panel",
       },
     },
     defaultVariants: {
@@ -46,7 +45,7 @@ export function ToastViewport({ toasts, onDismiss }: ToastViewportProps) {
           <button
             type="button"
             onClick={() => onDismiss(toast.id)}
-            className="rounded px-2 py-1 text-xs hover:bg-slate-900/10"
+            className="state-panel-action rounded px-2 py-1 text-xs"
             aria-label="Cerrar mensaje"
           >
             Cerrar

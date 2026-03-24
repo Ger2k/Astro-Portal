@@ -47,6 +47,17 @@
     --ring: 174 64% 30%;
     --danger: 3 74% 44%;
     --danger-foreground: 0 0% 100%;
+    --success: 166 72% 34%;
+    --success-soft: 160 58% 92%;
+    --success-soft-foreground: 166 65% 20%;
+    --success-border: 163 35% 75%;
+    --warning: 38 92% 44%;
+    --warning-soft: 44 100% 90%;
+    --warning-soft-foreground: 32 76% 22%;
+    --warning-border: 41 72% 74%;
+    --danger-soft: 8 100% 96%;
+    --danger-soft-foreground: 3 68% 31%;
+    --danger-border: 6 62% 80%;
     --page-glow-1: hsl(172 70% 86% / 0.5);
     --page-glow-2: hsl(178 48% 90% / 0.45);
     --header-backdrop: color-mix(in oklab, hsl(var(--surface)) 88%, white);
@@ -69,6 +80,17 @@
     --ring: 217 91% 64%;
     --danger: 0 78% 63%;
     --danger-foreground: 0 0% 100%;
+    --success: 160 84% 60%;
+    --success-soft: 160 36% 18%;
+    --success-soft-foreground: 158 74% 82%;
+    --success-border: 161 36% 30%;
+    --warning: 42 95% 61%;
+    --warning-soft: 39 45% 18%;
+    --warning-soft-foreground: 45 92% 83%;
+    --warning-border: 40 34% 30%;
+    --danger-soft: 0 34% 18%;
+    --danger-soft-foreground: 0 82% 84%;
+    --danger-border: 0 34% 31%;
     --page-glow-1: hsl(220 80% 45% / 0.18);
     --page-glow-2: hsl(198 92% 52% / 0.12);
     --header-backdrop: color-mix(in oklab, hsl(var(--surface)) 92%, black);
@@ -90,6 +112,17 @@
     --ring: 32 90% 39%;
     --danger: 6 72% 46%;
     --danger-foreground: 0 0% 100%;
+    --success: 155 64% 31%;
+    --success-soft: 151 40% 90%;
+    --success-soft-foreground: 156 61% 20%;
+    --success-border: 153 28% 73%;
+    --warning: 32 88% 39%;
+    --warning-soft: 40 88% 88%;
+    --warning-soft-foreground: 28 65% 23%;
+    --warning-border: 37 54% 71%;
+    --danger-soft: 14 94% 93%;
+    --danger-soft-foreground: 7 63% 30%;
+    --danger-border: 14 54% 77%;
     --page-glow-1: hsl(38 88% 84% / 0.48);
     --page-glow-2: hsl(24 90% 88% / 0.42);
     --header-backdrop: color-mix(in oklab, hsl(var(--surface)) 88%, white);
@@ -112,6 +145,17 @@
     --ring: 348 89% 67%;
     --danger: 8 86% 62%;
     --danger-foreground: 0 0% 100%;
+    --success: 160 80% 62%;
+    --success-soft: 160 30% 17%;
+    --success-soft-foreground: 160 76% 83%;
+    --success-border: 160 28% 29%;
+    --warning: 35 96% 68%;
+    --warning-soft: 30 37% 18%;
+    --warning-soft-foreground: 40 92% 84%;
+    --warning-border: 28 28% 30%;
+    --danger-soft: 2 34% 18%;
+    --danger-soft-foreground: 4 88% 86%;
+    --danger-border: 2 31% 30%;
     --page-glow-1: hsl(346 84% 52% / 0.18);
     --page-glow-2: hsl(22 86% 56% / 0.1);
     --header-backdrop: color-mix(in oklab, hsl(var(--surface)) 92%, black);
@@ -139,5 +183,44 @@
 @layer utilities {
   .surface-card {
     @apply rounded-xl border border-border bg-surface text-surface-foreground shadow-(--shadow-soft);
+  }
+
+  .state-success-badge {
+    background-color: hsl(var(--success-soft));
+    color: hsl(var(--success-soft-foreground));
+  }
+
+  .state-warning-badge {
+    background-color: hsl(var(--warning-soft));
+    color: hsl(var(--warning-soft-foreground));
+  }
+
+  .state-danger-badge {
+    background-color: hsl(var(--danger-soft));
+    color: hsl(var(--danger-soft-foreground));
+  }
+
+  .state-danger-panel {
+    border-color: hsl(var(--danger-border));
+    background-color: hsl(var(--danger-soft));
+    color: hsl(var(--danger-soft-foreground));
+  }
+
+  .state-success-panel {
+    border-color: hsl(var(--success-border));
+    background-color: hsl(var(--success-soft));
+    color: hsl(var(--success-soft-foreground));
+  }
+
+  .state-error-text {
+    color: hsl(var(--danger-soft-foreground));
+  }
+
+  .state-success-dot {
+    background-color: hsl(var(--success));
+  }
+
+  .state-panel-action:hover {
+    background-color: color-mix(in oklab, currentColor 10%, transparent);
   }
 }

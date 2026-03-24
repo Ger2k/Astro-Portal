@@ -47,10 +47,10 @@ function ScoreBadge({ score }: { score: number | null }) {
 
   const colorClass =
     score >= 80
-      ? "bg-emerald-100 text-emerald-800"
+      ? "state-success-badge"
       : score >= 60
-        ? "bg-yellow-100 text-yellow-800"
-        : "bg-red-100 text-red-700";
+        ? "state-warning-badge"
+        : "state-danger-badge";
 
   return (
     <span
@@ -446,7 +446,7 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
         ) : null}
 
         {!loading && errorMessage ? (
-          <p className="rounded-md border border-danger bg-red-50 px-3 py-2 text-sm text-red-900">
+          <p className="state-danger-panel rounded-md border px-3 py-2 text-sm">
             {errorMessage}
           </p>
         ) : null}
@@ -638,7 +638,7 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
           </div>
 
           {editError ? (
-            <p className="rounded-md border border-danger bg-red-50 px-3 py-2 text-sm text-red-900">
+            <p className="state-danger-panel rounded-md border px-3 py-2 text-sm">
               {editError}
             </p>
           ) : null}

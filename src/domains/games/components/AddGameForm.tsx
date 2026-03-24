@@ -252,7 +252,7 @@ export function AddGameForm({
 
           {/* Error */}
           {error ? (
-            <p className="rounded-md border border-danger bg-red-50 px-3 py-2 text-sm text-red-900">
+            <p className="state-danger-panel rounded-md border px-3 py-2 text-sm">
               {error}
             </p>
           ) : null}
