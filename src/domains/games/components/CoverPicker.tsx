@@ -23,22 +23,15 @@ function releaseYear(date: string | null) {
 }
 
 export function CoverPicker({ suggestedTitle, value, onChange, disabled }: CoverPickerProps) {
-  const [query, setQuery] = useState("");
   const [results, setResults] = useState<CoverOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setQuery(suggestedTitle);
-    }
-  }, [suggestedTitle]);
+  const normalizedTitle = suggestedTitle.trim();
 
   useEffect(() => {
-    const normalized = query.trim();
-
-    if (normalized.length < 2) {
+    if (normalizedTitle.length < 2) {
       setResults([]);
       setError(null);
       setIsLoading(false);
@@ -51,7 +44,7 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
       setError(null);
 
       try {
-        const response = await fetch(`/api/rawg-cover?query=${encodeURIComponent(normalized)}`, {
+        const response = await fetch(`/api/rawg-cover?query=${encodeURIComponent(normalizedTitle)}`, {
           signal: controller.signal,
         });
 
@@ -84,7 +77,7 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [query, refreshTick]);
+  }, [normalizedTitle, refreshTick]);
 
   const selectedResultId = useMemo(() => {
     if (!value.trim()) return null;
@@ -92,34 +85,30 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
     return selected?.id ?? null;
   }, [results, value]);
 
-  const hasQuery = query.trim().length >= 2;
+  const canSearch = normalizedTitle.length >= 2;
 
   return (
     <div className="space-y-3">
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-foreground">Buscar portada en RAWG</label>
-        <div className="flex gap-2">
-          <Input
-            type="search"
-            placeholder="Ej. Elden Ring"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            disabled={disabled}
-            aria-label="Buscar portada del juego"
-          />
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setRefreshTick((v) => v + 1)}
-            disabled={disabled || !hasQuery || isLoading}
-          >
-            {isLoading ? "Buscando..." : "Buscar"}
-          </Button>
-        </div>
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2">
         <p className="text-xs text-muted-foreground">
-          Escribe al menos 2 letras para obtener sugerencias automaticas.
+          Busqueda automatica con el titulo: <span className="font-medium text-foreground">{normalizedTitle || "(vacio)"}</span>
         </p>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={() => setRefreshTick((v) => v + 1)}
+          disabled={disabled || !canSearch || isLoading}
+        >
+          {isLoading ? "Actualizando..." : "Actualizar"}
+        </Button>
       </div>
+
+      {!canSearch ? (
+        <p className="text-sm text-muted-foreground">
+          Escribe al menos 2 letras en el campo Titulo para buscar portadas.
+        </p>
+      ) : null}
 
       {isLoading ? <p className="text-sm text-muted-foreground">Buscando portadas...</p> : null}
 
@@ -129,12 +118,12 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
         </p>
       ) : null}
 
-      {!isLoading && !error && hasQuery && results.length === 0 ? (
+      {!isLoading && !error && canSearch && results.length === 0 ? (
         <p className="text-sm text-muted-foreground">No encontramos portadas para ese titulo.</p>
       ) : null}
 
       {!isLoading && results.length > 0 ? (
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="flex gap-2 overflow-x-auto pb-1">
           {results.map((option) => {
             const isSelected = selectedResultId === option.id;
 
@@ -145,7 +134,7 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
                 onClick={() => onChange(option.image)}
                 disabled={disabled}
                 className={[
-                  "overflow-hidden rounded-lg border text-left transition",
+                  "w-24 shrink-0 overflow-hidden rounded-lg border text-left transition",
                   isSelected
                     ? "border-primary ring-2 ring-ring"
                     : "border-border hover:border-foreground/40",
@@ -158,9 +147,9 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
                   className="h-28 w-full object-cover"
                   loading="lazy"
                 />
-                <div className="space-y-0.5 p-2">
-                  <p className="line-clamp-1 text-xs font-semibold text-foreground">{option.title}</p>
-                  <p className="line-clamp-1 text-[11px] text-muted-foreground">
+                <div className="space-y-0.5 p-1.5">
+                  <p className="line-clamp-1 text-[11px] font-semibold text-foreground">{option.title}</p>
+                  <p className="line-clamp-1 text-[10px] text-muted-foreground">
                     {releaseYear(option.released)}
                     {option.platforms.length > 0 ? ` · ${option.platforms[0]}` : ""}
                   </p>
@@ -171,28 +160,31 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
         </div>
       ) : null}
 
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-foreground">URL de portada (manual)</label>
-        <Input
-          type="url"
-          placeholder="https://..."
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-        />
-      </div>
+      <div className="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_56px]">
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-foreground">URL de portada (manual)</label>
+          <Input
+            type="url"
+            placeholder="https://..."
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
 
-      {value.trim() ? (
-        <div className="rounded-lg border border-border bg-muted/35 p-2">
-          <p className="mb-2 text-xs text-muted-foreground">Portada seleccionada</p>
+        {value.trim() ? (
           <img
             src={value}
             alt="Vista previa de portada"
-            className="h-36 w-24 rounded object-cover"
+            className="h-20 w-14 rounded object-cover ring-1 ring-border"
             loading="lazy"
           />
-        </div>
-      ) : null}
+        ) : (
+          <div className="flex h-20 w-14 items-center justify-center rounded bg-muted text-xs text-muted-foreground ring-1 ring-border">
+            Sin
+          </div>
+        )}
+      </div>
     </div>
   );
 }

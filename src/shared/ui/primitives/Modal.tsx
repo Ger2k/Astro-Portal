@@ -35,7 +35,7 @@ export function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto px-4 py-6">
       <button
         type="button"
         aria-label="Cerrar modal"
@@ -48,7 +48,7 @@ export function Modal({
         aria-modal="true"
         aria-labelledby="modal-title"
         aria-describedby={description ? "modal-description" : undefined}
-        className={cn("surface-card relative z-10 w-full max-w-lg p-5")}
+        className={cn("surface-card relative z-10 mx-auto w-full max-w-lg max-h-[calc(100dvh-3rem)] overflow-y-auto p-5")}
       >
         <header className="space-y-2">
           <h2 id="modal-title" className="text-xl font-semibold text-foreground">
