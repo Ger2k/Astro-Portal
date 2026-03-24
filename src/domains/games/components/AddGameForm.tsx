@@ -55,12 +55,14 @@ interface AddGameFormProps {
   onSuccess: () => void;
   triggerVariant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
   triggerSize?: "sm" | "md" | "lg";
+  triggerClassName?: string;
 }
 
 export function AddGameForm({
   onSuccess,
   triggerVariant = "primary",
   triggerSize = "md",
+  triggerClassName,
 }: AddGameFormProps) {
   const { user } = useAuthSession();
   const { toasts, push, dismiss } = useToast();
@@ -141,7 +143,7 @@ export function AddGameForm({
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)} variant={triggerVariant} size={triggerSize}>
+      <Button onClick={() => setIsOpen(true)} variant={triggerVariant} size={triggerSize} className={triggerClassName}>
         + Añadir juego
       </Button>
 
@@ -258,11 +260,11 @@ export function AddGameForm({
           ) : null}
 
           {/* Acciones */}
-          <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="secondary" onClick={handleCancel} disabled={submitting}>
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+            <Button type="button" variant="secondary" onClick={handleCancel} disabled={submitting} className="w-full sm:w-auto">
               Cancelar
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
               {submitting ? "Guardando..." : "Guardar juego"}
             </Button>
           </div>

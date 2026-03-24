@@ -65,13 +65,13 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:pl-4">
+          <div className="w-full sm:w-auto sm:pl-4">
             {!isAuthenticated ? (
-              <Button onClick={loginWithGoogle} disabled={isBusy} size="sm">
+              <Button onClick={loginWithGoogle} disabled={isBusy} size="sm" className="w-full sm:w-auto">
                 {isBusy ? "Conectando..." : "Entrar con Google"}
               </Button>
             ) : (
-              <Button variant="secondary" onClick={logout} disabled={isBusy} size="sm">
+              <Button variant="secondary" onClick={logout} disabled={isBusy} size="sm" className="w-full sm:w-auto">
                 {isBusy ? "Saliendo..." : "Cerrar sesión"}
               </Button>
             )}
@@ -112,13 +112,13 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
           </div>
         ) : null}
 
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {!isAuthenticated ? (
-            <Button onClick={loginWithGoogle} disabled={isBusy}>
+            <Button onClick={loginWithGoogle} disabled={isBusy} className="w-full sm:w-auto">
               {isBusy ? "Conectando..." : "Entrar con Google"}
             </Button>
           ) : (
-            <Button variant="secondary" onClick={logout} disabled={isBusy}>
+            <Button variant="secondary" onClick={logout} disabled={isBusy} className="w-full sm:w-auto">
               {isBusy ? "Saliendo..." : "Cerrar sesión"}
             </Button>
           )}

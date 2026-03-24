@@ -70,9 +70,9 @@ interface GameCardProps {
 
 function GameCard({ game, onDelete, onEdit }: GameCardProps) {
   return (
-    <li className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-start">
+    <li className="grid gap-3 rounded-xl border border-border bg-surface p-4 shadow-sm sm:grid-cols-[56px_minmax(0,1fr)_auto] sm:items-start sm:gap-4">
       {game.cover ? (
-        <div className="overflow-hidden rounded-lg ring-1 ring-border/80 shadow-sm">
+        <div className="overflow-hidden rounded-lg ring-1 ring-border/80 shadow-sm sm:self-start">
           <img
             src={game.cover}
             alt={`Portada de ${game.title}`}
@@ -84,14 +84,14 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
         </div>
       ) : (
         <div
-          className="flex h-20 w-14 shrink-0 items-center justify-center rounded-lg bg-muted text-2xl ring-1 ring-border/80"
+          className="flex h-20 w-14 items-center justify-center rounded-lg bg-muted text-2xl ring-1 ring-border/80 sm:self-start"
           aria-hidden="true"
         >
           🎮
         </div>
       )}
 
-      <div className="min-w-0 flex-1 space-y-1 self-stretch">
+      <div className="min-w-0 space-y-1 sm:self-stretch">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold text-foreground">{game.title}</p>
@@ -102,11 +102,9 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
             {game.platform || "Plataforma no especificada"}
           </p>
 
-          <p className="text-xs text-muted-foreground">
+          <p className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-3 sm:gap-y-1">
             <span>Completado: {formatDate(game.date)}</span>
-            {game.hours !== null ? (
-              <span className="ml-3">{game.hours} h jugadas</span>
-            ) : null}
+            {game.hours !== null ? <span>{game.hours} h jugadas</span> : null}
           </p>
 
           {game.notes ? (
@@ -117,13 +115,12 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-row justify-end gap-2 sm:min-h-full sm:flex-col sm:items-end sm:justify-between">
-        <div className="hidden sm:block sm:h-1" aria-hidden="true" />
-        <div className="flex flex-wrap justify-end gap-2">
+      <div className="col-span-full flex justify-end border-t border-border/70 pt-3 sm:col-span-1 sm:row-span-2 sm:border-t-0 sm:pt-0">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
           <Button
             type="button"
             variant="secondary"
-            className="h-8 px-3 text-xs"
+            className="h-8 w-full px-3 text-xs sm:w-auto"
             onClick={() => onEdit(game)}
           >
             Editar
@@ -131,7 +128,7 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
           <Button
             type="button"
             variant="outline"
-            className="h-8 px-3 text-xs"
+            className="h-8 w-full px-3 text-xs sm:w-auto"
             onClick={() => onDelete(game)}
           >
             Eliminar
@@ -391,14 +388,14 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <CardTitle>Juegos completados</CardTitle>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
             {addGameAction}
-            <Button variant="secondary" onClick={() => void loadGames()} disabled={loading}>
+            <Button variant="secondary" onClick={() => void loadGames()} disabled={loading} className="w-full sm:w-auto">
               {loading ? "Actualizando..." : "Actualizar"}
             </Button>
           </div>
@@ -485,7 +482,7 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
                   : "Mostrando 0 resultados"}
               </p>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 self-start sm:self-auto">
                 <label className="text-sm text-muted-foreground" htmlFor="page-size">
                   Por página
                 </label>
@@ -502,12 +499,13 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
               <Button
                 type="button"
                 variant="secondary"
                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1 || visibleGames.length === 0}
+                className="w-full sm:w-auto"
               >
                 Anterior
               </Button>
@@ -519,6 +517,7 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
                 variant="secondary"
                 onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages || visibleGames.length === 0}
+                className="w-full sm:w-auto"
               >
                 Siguiente
               </Button>
@@ -643,16 +642,17 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
             </p>
           ) : null}
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
             <Button
               type="button"
               variant="secondary"
               onClick={() => setPendingEdit(null)}
               disabled={editing}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={editing}>
+            <Button type="submit" disabled={editing} className="w-full sm:w-auto">
               {editing ? "Guardando..." : "Guardar cambios"}
             </Button>
           </div>
@@ -672,16 +672,17 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
         }}
         showCloseButton={false}
       >
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="secondary"
             onClick={() => setPendingDelete(null)}
             disabled={deleting}
+            className="w-full sm:w-auto"
           >
             Cancelar
           </Button>
-          <Button type="button" onClick={() => void confirmDelete()} disabled={deleting}>
+          <Button type="button" onClick={() => void confirmDelete()} disabled={deleting} className="w-full sm:w-auto">
             {deleting ? "Eliminando..." : "Eliminar"}
           </Button>
         </div>

@@ -18,6 +18,7 @@ export function AppPrivateView() {
                 onSuccess={() => setListVersion((v) => v + 1)}
                 triggerVariant="primary"
                 triggerSize="md"
+                triggerClassName="w-full sm:w-auto"
               />
             }
           />

@@ -55,12 +55,12 @@ export function ThemeSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
-      <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-start sm:gap-3">
+      <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
         Estilo
       </span>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2 sm:justify-start">
         {THEMES.map((theme) => {
           const isActive = theme.id === activeTheme;
 
@@ -70,7 +70,7 @@ export function ThemeSwitcher() {
               type="button"
               onClick={() => applyTheme(theme.id)}
               className={[
-                "group relative flex h-9 w-9 items-center justify-center rounded-full border transition",
+                "group relative flex h-8 w-8 items-center justify-center rounded-full border transition sm:h-9 sm:w-9",
                 isActive
                   ? "border-foreground bg-surface shadow-sm"
                   : "border-border bg-surface/80 hover:border-foreground/40",
@@ -80,7 +80,7 @@ export function ThemeSwitcher() {
               title={theme.label}
             >
               <span className="sr-only">{theme.label}</span>
-              <span className="flex h-5 w-5 overflow-hidden rounded-full ring-1 ring-black/5">
+              <span className="flex h-4 w-4 overflow-hidden rounded-full ring-1 ring-black/5 sm:h-5 sm:w-5">
                 {theme.swatches.map((swatch) => (
                   <span
                     key={swatch}
