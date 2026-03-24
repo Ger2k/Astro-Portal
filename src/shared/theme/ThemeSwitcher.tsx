@@ -10,8 +10,8 @@ const THEMES = [
   },
   {
     id: "cobalt",
-    label: "Cobalto",
-    swatches: ["#1d4ed8", "#dbeafe", "#f8fbff"],
+    label: "Cobalto Noche",
+    swatches: ["#60a5fa", "#1e293b", "#0f172a"],
   },
   {
     id: "sand",
@@ -20,8 +20,8 @@ const THEMES = [
   },
   {
     id: "coral",
-    label: "Coral",
-    swatches: ["#e11d48", "#ffe1e8", "#fff8f8"],
+    label: "Coral Nocturno",
+    swatches: ["#fb7185", "#3b1020", "#140810"],
   },
 ] as const;
 
