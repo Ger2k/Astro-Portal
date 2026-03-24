@@ -433,30 +433,6 @@ export function CompletedGamesList() {
           </select>
         </div>
 
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted-foreground">
-            {visibleGames.length > 0
-              ? `Mostrando ${pageStart + 1}-${pageEnd} de ${visibleGames.length}`
-              : "Mostrando 0 resultados"}
-          </p>
-
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-muted-foreground" htmlFor="page-size">
-              Por página
-            </label>
-            <select
-              id="page-size"
-              className="h-10 rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-          </div>
-        </div>
-
         {loading ? (
           <p className="text-sm text-muted-foreground">Cargando juegos...</p>
         ) : null}
@@ -492,27 +468,53 @@ export function CompletedGamesList() {
           </ul>
         ) : null}
 
-        {!loading && !errorMessage && visibleGames.length > pageSize ? (
-          <div className="mt-5 flex items-center justify-end gap-3">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Página {currentPage} de {totalPages}
-            </span>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Siguiente
-            </Button>
+        {!loading && !errorMessage && games.length > 0 ? (
+          <div className="mt-5 space-y-3 border-t border-border pt-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
+                {visibleGames.length > 0
+                  ? `Mostrando ${pageStart + 1}-${pageEnd} de ${visibleGames.length}`
+                  : "Mostrando 0 resultados"}
+              </p>
+
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-muted-foreground" htmlFor="page-size">
+                  Por página
+                </label>
+                <select
+                  id="page-size"
+                  className="h-10 rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1 || visibleGames.length === 0}
+              >
+                Anterior
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Página {currentPage} de {totalPages}
+              </span>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages || visibleGames.length === 0}
+              >
+                Siguiente
+              </Button>
+            </div>
           </div>
         ) : null}
       </CardContent>
