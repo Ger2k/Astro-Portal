@@ -20,11 +20,61 @@ export interface GamesStatsSummary {
   monthlyActivity: MonthlyActivityItem[];
 }
 
+export interface GamesStatsFilters {
+  year: string;
+  platform: string;
+}
+
 function parseValidDate(date: string | null) {
   if (!date) return null;
   const time = Date.parse(date);
   if (Number.isNaN(time)) return null;
   return new Date(time);
+}
+
+export function getAvailableYears(games: CompletedGame[]) {
+  const years = new Set<number>();
+
+  for (const game of games) {
+    const parsed = parseValidDate(game.date);
+    if (!parsed) continue;
+    years.add(parsed.getFullYear());
+  }
+
+  return Array.from(years).sort((a, b) => b - a);
+}
+
+export function getAvailablePlatforms(games: CompletedGame[]) {
+  const platforms = new Set<string>();
+
+  for (const game of games) {
+    const platform = game.platform.trim();
+    if (!platform) continue;
+    platforms.add(platform);
+  }
+
+  return Array.from(platforms).sort((a, b) => a.localeCompare(b, "es"));
+}
+
+export function filterGamesForStats(games: CompletedGame[], filters: GamesStatsFilters) {
+  return games.filter((game) => {
+    const matchesPlatform = filters.platform === "Todas" || game.platform === filters.platform;
+
+    if (!matchesPlatform) {
+      return false;
+    }
+
+    if (filters.year === "Todos") {
+      return true;
+    }
+
+    const parsed = parseValidDate(game.date);
+    if (!parsed) {
+      return false;
+    }
+
+    return String(parsed.getFullYear()) === filters.year;
+  });
 }
 
 function getPlatformDistribution(games: CompletedGame[]) {
