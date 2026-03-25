@@ -70,8 +70,8 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
   const canSearch = normalizedTitle.length >= 2;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2">
+    <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-3">
+      <div className="flex items-center justify-between gap-2">
         <p className="text-xs text-muted-foreground">
           Buscar portada para: <span className="font-medium text-foreground">{normalizedTitle || "(vacio)"}</span>
         </p>
@@ -84,6 +84,34 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
         >
           {isLoading ? "Buscando..." : "Buscar"}
         </Button>
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        Selecciona una portada de los resultados o pega una URL manual.
+      </p>
+
+      <div className="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_56px]">
+        <Input
+          type="url"
+          placeholder="https://..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          aria-label="URL de portada"
+        />
+
+        {value.trim() ? (
+          <img
+            src={value}
+            alt="Vista previa de portada"
+            className="h-20 w-14 rounded object-cover ring-1 ring-border"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-20 w-14 items-center justify-center rounded bg-muted text-xs text-muted-foreground ring-1 ring-border">
+            Sin
+          </div>
+        )}
       </div>
 
       {!canSearch ? (
@@ -141,32 +169,6 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
           })}
         </div>
       ) : null}
-
-      <div className="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_56px]">
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-foreground">URL de portada (manual)</label>
-          <Input
-            type="url"
-            placeholder="https://..."
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled}
-          />
-        </div>
-
-        {value.trim() ? (
-          <img
-            src={value}
-            alt="Vista previa de portada"
-            className="h-20 w-14 rounded object-cover ring-1 ring-border"
-            loading="lazy"
-          />
-        ) : (
-          <div className="flex h-20 w-14 items-center justify-center rounded bg-muted text-xs text-muted-foreground ring-1 ring-border">
-            Sin
-          </div>
-        )}
-      </div>
     </div>
   );
 }

@@ -62,6 +62,26 @@ function ScoreBadge({ score }: { score: number | null }) {
   );
 }
 
+function RefreshIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+      />
+    </svg>
+  );
+}
+
 interface GameCardProps {
   game: CompletedGame;
   onDelete: (game: CompletedGame) => void;
@@ -395,8 +415,15 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
 
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
             {addGameAction}
-            <Button variant="secondary" onClick={() => void loadGames()} disabled={loading} className="w-full sm:w-auto">
-              {loading ? "Actualizando..." : "Actualizar"}
+            <Button
+              variant="ghost"
+              onClick={() => void loadGames()}
+              disabled={loading}
+              className="h-10 w-10 p-0 hover:bg-transparent"
+              aria-label={loading ? "Actualizando lista" : "Actualizar lista"}
+              title={loading ? "Actualizando..." : "Actualizar"}
+            >
+              <RefreshIcon className={loading ? "h-5 w-5 animate-spin" : "h-5 w-5"} />
             </Button>
           </div>
         </div>
@@ -553,69 +580,73 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">Plataforma</label>
-            <select
-              className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              value={editForm.platform}
-              onChange={(e) => setEditField("platform", e.target.value)}
-            >
-              {PLATFORM_OPTIONS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-            {editForm.platform === "Otro" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-foreground">Plataforma</label>
+              <select
+                className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                value={editForm.platform}
+                onChange={(e) => setEditField("platform", e.target.value)}
+              >
+                {PLATFORM_OPTIONS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+              {editForm.platform === "Otro" ? (
+                <Input
+                  type="text"
+                  placeholder="Escribe la plataforma"
+                  className="mt-2"
+                  value={customPlatform}
+                  onChange={(e) => setCustomPlatform(e.target.value)}
+                />
+              ) : null}
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-foreground">Fecha completado</label>
               <Input
-                type="text"
-                placeholder="Escribe la plataforma"
-                className="mt-2"
-                value={customPlatform}
-                onChange={(e) => setCustomPlatform(e.target.value)}
+                type="date"
+                value={editForm.date ?? ""}
+                max={todayISO()}
+                onChange={(e) => setEditField("date", e.target.value)}
               />
-            ) : null}
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">Fecha completado</label>
-            <Input
-              type="date"
-              value={editForm.date ?? ""}
-              max={todayISO()}
-              onChange={(e) => setEditField("date", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">Puntuación</label>
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={editForm.score ?? 0}
-                onChange={(e) => setEditField("score", Number(e.target.value))}
-                className="flex-1 accent-primary"
-                aria-label={`Puntuación: ${editForm.score ?? 0} de 100`}
-              />
-              <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
-                {editForm.score ?? 0}
-              </span>
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-foreground">Horas jugadas</label>
-            <Input
-              type="number"
-              min={0}
-              value={editForm.hours ?? ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                setEditField("hours", value === "" ? null : Number(value));
-              }}
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-foreground">Puntuación</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={editForm.score ?? 0}
+                  onChange={(e) => setEditField("score", Number(e.target.value))}
+                  className="flex-1 accent-primary"
+                  aria-label={`Puntuación: ${editForm.score ?? 0} de 100`}
+                />
+                <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
+                  {editForm.score ?? 0}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-foreground">Horas jugadas</label>
+              <Input
+                type="number"
+                min={0}
+                value={editForm.hours ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setEditField("hours", value === "" ? null : Number(value));
+                }}
+              />
+            </div>
           </div>
 
           <div className="space-y-1">

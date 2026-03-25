@@ -165,71 +165,75 @@ export function AddGameForm({
             />
           </Field>
 
-          {/* Plataforma */}
-          <Field label="Plataforma" required>
-            <select
-              className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              value={form.platform}
-              onChange={(e) => set("platform", e.target.value)}
-            >
-              {PLATFORM_OPTIONS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-            {isCustomPlatform ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* Plataforma */}
+            <Field label="Plataforma" required>
+              <select
+                className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                value={form.platform}
+                onChange={(e) => set("platform", e.target.value)}
+              >
+                {PLATFORM_OPTIONS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+              {isCustomPlatform ? (
+                <Input
+                  type="text"
+                  placeholder="Escribe la plataforma"
+                  className="mt-2"
+                  value={customPlatform}
+                  onChange={(e) => setCustomPlatform(e.target.value)}
+                />
+              ) : null}
+            </Field>
+
+            {/* Fecha */}
+            <Field label="Fecha completado" required>
               <Input
-                type="text"
-                placeholder="Escribe la plataforma"
-                className="mt-2"
-                value={customPlatform}
-                onChange={(e) => setCustomPlatform(e.target.value)}
+                type="date"
+                value={form.date ?? ""}
+                max={todayISO()}
+                onChange={(e) => set("date", e.target.value)}
               />
-            ) : null}
-          </Field>
+            </Field>
+          </div>
 
-          {/* Fecha */}
-          <Field label="Fecha completado" required>
-            <Input
-              type="date"
-              value={form.date ?? ""}
-              max={todayISO()}
-              onChange={(e) => set("date", e.target.value)}
-            />
-          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* Puntuación slider */}
+            <Field label="Puntuación">
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={form.score ?? 0}
+                  onChange={(e) => set("score", Number(e.target.value))}
+                  className="flex-1 accent-primary"
+                  aria-label={`Puntuación: ${form.score ?? 0} de 100`}
+                />
+                <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
+                  {form.score ?? 0}
+                </span>
+              </div>
+            </Field>
 
-          {/* Puntuación slider */}
-          <Field label="Puntuación">
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
+            {/* Horas */}
+            <Field label="Horas jugadas" hint="Opcional">
+              <Input
+                type="number"
+                placeholder="Ej. 120"
                 min={0}
-                max={100}
-                value={form.score ?? 0}
-                onChange={(e) => set("score", Number(e.target.value))}
-                className="flex-1 accent-primary"
-                aria-label={`Puntuación: ${form.score ?? 0} de 100`}
+                value={form.hours ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  set("hours", v === "" ? null : Number(v));
+                }}
               />
-              <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
-                {form.score ?? 0}
-              </span>
-            </div>
-          </Field>
-
-          {/* Horas */}
-          <Field label="Horas jugadas" hint="Opcional">
-            <Input
-              type="number"
-              placeholder="Ej. 120"
-              min={0}
-              value={form.hours ?? ""}
-              onChange={(e) => {
-                const v = e.target.value;
-                set("hours", v === "" ? null : Number(v));
-              }}
-            />
-          </Field>
+            </Field>
+          </div>
 
           {/* Portada */}
           <Field label="Portada" hint="Opcional">
