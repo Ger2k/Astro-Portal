@@ -16,22 +16,22 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
 
   if (variant === "bar") {
     return (
-      <div className="rounded-2xl border border-border/70 bg-surface/80 px-3 py-3 shadow-sm backdrop-blur sm:px-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
+      <div className="rounded-xl border border-border/70 bg-surface/80 px-2.5 py-2 shadow-sm backdrop-blur">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <div className="relative shrink-0">
               {photoUrl ? (
                 <img
                   src={photoUrl}
                   alt={`Avatar de ${displayName}`}
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 rounded-full object-cover ring-1 ring-border"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full object-cover ring-1 ring-border"
                   loading="lazy"
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/12 text-sm font-semibold text-foreground ring-1 ring-border">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/12 text-xs font-semibold text-foreground ring-1 ring-border">
                   {userInitial}
                 </div>
               )}
@@ -45,42 +45,42 @@ export function AuthAccessPanel({ variant = "card" }: AuthAccessPanelProps) {
             </div>
 
             <div className="min-w-0">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="hidden text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:block">
                 Sesión
               </p>
               {isAuthenticated && user ? (
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
+                  <p className="truncate text-xs font-semibold text-foreground sm:text-sm">
                     {displayName}
                   </p>
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="hidden max-w-48 truncate text-xs text-muted-foreground sm:block">
                     {user.email ?? "Sesión activa"}
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground sm:text-sm">
                   {isBusy ? "Comprobando sesión..." : "Inicia sesión para sincronizar tu biblioteca."}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="w-full sm:w-auto sm:pl-4">
+          <div className="shrink-0">
             {!isAuthenticated ? (
-              <Button onClick={loginWithGoogle} disabled={isBusy} size="sm" className="w-full sm:w-auto">
-                {isBusy ? "Conectando..." : "Entrar con Google"}
+              <Button onClick={loginWithGoogle} disabled={isBusy} size="sm" className="h-8 px-2.5 text-xs">
+                {isBusy ? "..." : "Entrar"}
               </Button>
             ) : (
-              <Button variant="secondary" onClick={logout} disabled={isBusy} size="sm" className="w-full sm:w-auto">
-                {isBusy ? "Saliendo..." : "Cerrar sesión"}
+              <Button variant="secondary" onClick={logout} disabled={isBusy} size="sm" className="h-8 px-2.5 text-xs">
+                {isBusy ? "..." : "Salir"}
               </Button>
             )}
           </div>
         </div>
 
         {errorMessage ? (
-          <div className="state-danger-panel mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border px-3 py-2 text-sm">
-            <p>{errorMessage}</p>
+          <div className="state-danger-panel mt-2 flex items-center justify-between gap-2 rounded-lg border px-2 py-1 text-xs">
+            <p className="truncate">{errorMessage}</p>
             <button type="button" className="state-panel-action rounded px-1 py-0.5 underline" onClick={clearError}>
               Ocultar
             </button>
