@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, Input } from "@shared/ui/primitives";
 
 interface CoverOption {
@@ -26,58 +26,40 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
   const [results, setResults] = useState<CoverOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [refreshTick, setRefreshTick] = useState(0);
 
   const normalizedTitle = suggestedTitle.trim();
 
-  useEffect(() => {
-    if (normalizedTitle.length < 2) {
-      setResults([]);
-      setError(null);
-      setIsLoading(false);
+  async function handleSearch() {
+    if (normalizedTitle.length < 2 || isLoading) {
       return;
     }
 
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(async () => {
-      setIsLoading(true);
-      setError(null);
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        const response = await fetch(`/api/rawg-cover?query=${encodeURIComponent(normalizedTitle)}`, {
-          signal: controller.signal,
-        });
+    try {
+      const response = await fetch(`/api/rawg-cover?query=${encodeURIComponent(normalizedTitle)}`);
 
-        const payload = (await response.json()) as {
-          ok: boolean;
-          data?: CoverOption[];
-          errorMessage?: string;
-        };
+      const payload = (await response.json()) as {
+        ok: boolean;
+        data?: CoverOption[];
+        errorMessage?: string;
+      };
 
-        if (!response.ok || !payload.ok) {
-          setResults([]);
-          setError(payload.errorMessage ?? "No se pudo buscar en RAWG.");
-          return;
-        }
-
-        setResults(payload.data ?? []);
-      } catch (err) {
-        if ((err as Error).name === "AbortError") {
-          return;
-        }
-
+      if (!response.ok || !payload.ok) {
         setResults([]);
-        setError("No se pudo conectar para buscar portadas.");
-      } finally {
-        setIsLoading(false);
+        setError(payload.errorMessage ?? "No se pudo buscar en RAWG.");
+        return;
       }
-    }, 350);
 
-    return () => {
-      controller.abort();
-      window.clearTimeout(timeoutId);
-    };
-  }, [normalizedTitle, refreshTick]);
+      setResults(payload.data ?? []);
+    } catch {
+      setResults([]);
+      setError("No se pudo conectar para buscar portadas.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const selectedResultId = useMemo(() => {
     if (!value.trim()) return null;
@@ -91,16 +73,16 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2">
         <p className="text-xs text-muted-foreground">
-          Busqueda automatica con el titulo: <span className="font-medium text-foreground">{normalizedTitle || "(vacio)"}</span>
+          Buscar portada para: <span className="font-medium text-foreground">{normalizedTitle || "(vacio)"}</span>
         </p>
         <Button
           type="button"
           variant="secondary"
           size="sm"
-          onClick={() => setRefreshTick((v) => v + 1)}
+          onClick={() => void handleSearch()}
           disabled={disabled || !canSearch || isLoading}
         >
-          {isLoading ? "Actualizando..." : "Actualizar"}
+          {isLoading ? "Buscando..." : "Buscar"}
         </Button>
       </div>
 
