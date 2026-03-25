@@ -115,7 +115,7 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
         </div>
       </div>
 
-      <div className="col-span-2 flex justify-end border-t border-border/70 pt-3 sm:col-span-1 sm:row-span-2 sm:border-t-0 sm:pt-0">
+      <div className="col-span-2 flex justify-end border-t border-border/70 pt-3 sm:col-span-1 sm:border-t-0 sm:pt-0">
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
           <Button
             type="button"
