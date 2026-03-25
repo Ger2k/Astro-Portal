@@ -1,62 +1,113 @@
-# Astro Starter Kit: Blog
+# Portal Games Tracker
+
+Aplicación web construida con Astro, React y Firebase para registrar juegos completados, mantener una biblioteca personal y gestionar la sesión con Google.
+
+## Resumen
+
+Portal Games Tracker combina una landing ligera con una zona de aplicación donde cada usuario puede:
+
+- iniciar sesión con Google,
+- guardar juegos completados en Firebase Realtime Database,
+- editar o eliminar registros existentes,
+- buscar portadas desde RAWG mediante un endpoint del servidor,
+- usar filtros, ordenación y paginación,
+- cambiar entre varios temas visuales.
+
+## Stack
+
+- Astro 6
+- React 19
+- Tailwind CSS 4
+- Firebase Authentication
+- Firebase Realtime Database
+- Netlify SSR
+
+## Requisitos
+
+- Node.js 22.12.0 o superior
+- npm
+- Un proyecto de Firebase con Authentication y Realtime Database configurados
+- Una API key válida de RAWG para la búsqueda de portadas
+
+## Variables de entorno
+
+Crea un archivo `.env` o configura estas variables en tu proveedor de despliegue:
+
+```env
+PUBLIC_FIREBASE_API_KEY=
+PUBLIC_FIREBASE_AUTH_DOMAIN=
+PUBLIC_FIREBASE_PROJECT_ID=
+PUBLIC_FIREBASE_APP_ID=
+PUBLIC_FIREBASE_DATABASE_URL=
+RAWG_API_KEY=
+```
+
+Notas importantes:
+
+- Las variables con prefijo `PUBLIC_` se usan en cliente para inicializar Firebase.
+- `RAWG_API_KEY` solo debe existir en entorno servidor.
+- Si despliegas en Netlify, añade tu dominio en Firebase Authentication > Settings > Authorized domains.
+- Activa el proveedor de Google en Firebase Authentication > Sign-in method.
+
+## Instalación
 
 ```sh
-npm create astro@latest -- --template blog
+npm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Desarrollo
 
-Features:
+```sh
+npm run dev
+```
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+La aplicación se ejecutará en local y expondrá la landing en `/` y la aplicación principal en `/app`.
 
-## 🚀 Project Structure
+## Scripts disponibles
 
-Inside of your Astro project, you'll see the following folders and files:
+| Comando | Descripción |
+| :-- | :-- |
+| `npm run dev` | Inicia el servidor de desarrollo |
+| `npm run build` | Genera la build de producción |
+| `npm run preview` | Previsualiza la build generada |
+| `npm run check` | Ejecuta validaciones de Astro |
+| `npm run typecheck` | Alias de validación de tipos |
+| `npm run lint` | Ejecuta ESLint |
+| `npm run lint:fix` | Corrige problemas automáticos de lint |
+| `npm run format` | Formatea el proyecto con Prettier |
+| `npm run format:check` | Comprueba el formato sin modificar archivos |
+
+## Despliegue
+
+El proyecto está preparado para ejecutarse en Netlify con renderizado SSR.
+
+Pasos recomendados:
+
+1. Configura todas las variables de entorno en Netlify.
+2. Verifica que Firebase Authentication autoriza el dominio de producción.
+3. Ejecuta localmente `npm run build` antes de publicar.
+
+## Estructura general
 
 ```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+src/
+	config/        Configuración de Firebase y utilidades base
+	domains/       Lógica de negocio por áreas: auth, games, design-system
+	layouts/       Layouts Astro compartidos
+	pages/         Rutas públicas, privadas y endpoints
+	shared/        Componentes y utilidades reutilizables
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Estado del proyecto
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+La aplicación está orientada a uso real y ya incluye:
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+- autenticación con Google,
+- persistencia por usuario,
+- interfaz responsive,
+- temas visuales persistidos,
+- endpoint server-side para portadas con RAWG.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Licencia
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Uso privado o según lo que decida el propietario del repositorio.
