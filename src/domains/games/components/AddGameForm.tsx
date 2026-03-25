@@ -221,7 +221,7 @@ export function AddGameForm({
             </Field>
 
             {/* Horas */}
-            <Field label="Horas jugadas" hint="Opcional">
+            <Field label="Horas jugadas">
               <Input
                 type="number"
                 placeholder="Ej. 120"
@@ -236,7 +236,7 @@ export function AddGameForm({
           </div>
 
           {/* Portada */}
-          <Field label="Portada" hint="Opcional">
+          <Field label="Portada">
             <CoverPicker
               suggestedTitle={form.title}
               value={form.cover}
