@@ -7,6 +7,8 @@ export interface CompletedGame {
   score: number | null;
   hours: number | null;
   cover: string;
+  coverPositionX: number;
+  coverPositionY: number;
   notes: string;
 }
 
@@ -17,5 +19,7 @@ export interface NewGameInput {
   score: number | null;
   hours: number | null;
   cover: string;
+  coverPositionX: number;
+  coverPositionY: number;
   notes: string;
 }

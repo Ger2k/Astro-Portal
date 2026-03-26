@@ -26,6 +26,8 @@ type RawGame = {
   score?: unknown;
   hours?: unknown;
   cover?: unknown;
+  coverPositionX?: unknown;
+  coverPositionY?: unknown;
   notes?: unknown;
 };
 
@@ -53,6 +55,8 @@ function mapToCompletedGame(raw: RawGame, nodeKey: string): CompletedGame {
     score: typeof raw.score === "number" ? raw.score : null,
     hours: typeof raw.hours === "number" ? raw.hours : null,
     cover: typeof raw.cover === "string" ? raw.cover : "",
+    coverPositionX: typeof raw.coverPositionX === "number" ? raw.coverPositionX : 50,
+    coverPositionY: typeof raw.coverPositionY === "number" ? raw.coverPositionY : 50,
     notes: typeof raw.notes === "string" ? raw.notes : "",
   };
 }
@@ -103,6 +107,8 @@ export async function addGameForUser(userId: string, input: NewGameInput): Promi
       score: input.score,
       hours: input.hours,
       cover: input.cover.trim(),
+      coverPositionX: input.coverPositionX,
+      coverPositionY: input.coverPositionY,
       notes: input.notes.trim(),
     };
 
@@ -152,6 +158,8 @@ export async function updateGameForUser(
       score: input.score,
       hours: input.hours,
       cover: input.cover.trim(),
+      coverPositionX: input.coverPositionX,
+      coverPositionY: input.coverPositionY,
       notes: input.notes.trim(),
     };
 

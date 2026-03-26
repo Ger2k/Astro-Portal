@@ -99,6 +99,7 @@ function GameCard({ game, onDelete, onEdit }: GameCardProps) {
             width={56}
             height={80}
             className="h-20 w-14 shrink-0 object-cover"
+            style={{ objectPosition: `${game.coverPositionX}% ${game.coverPositionY}%` }}
             loading="lazy"
           />
         </div>
@@ -188,6 +189,8 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
     score: 70,
     hours: null,
     cover: "",
+    coverPositionX: 50,
+    coverPositionY: 50,
     notes: "",
   });
   const [customPlatform, setCustomPlatform] = useState("");
@@ -267,6 +270,8 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
       score: game.score,
       hours: game.hours,
       cover: game.cover,
+      coverPositionX: game.coverPositionX,
+      coverPositionY: game.coverPositionY,
       notes: game.notes,
     });
   }
@@ -656,6 +661,11 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
               suggestedTitle={editForm.title}
               value={editForm.cover}
               onChange={(nextValue) => setEditField("cover", nextValue)}
+              positionX={editForm.coverPositionX}
+              positionY={editForm.coverPositionY}
+              onPositionChange={(x, y) => {
+                setEditForm((prev) => ({ ...prev, coverPositionX: x, coverPositionY: y }));
+              }}
               disabled={editing}
             />
           </div>

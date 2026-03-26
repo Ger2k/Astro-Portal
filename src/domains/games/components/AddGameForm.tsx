@@ -28,6 +28,8 @@ const DEFAULT_FORM: NewGameInput = {
   score: 70,
   hours: null,
   cover: "",
+  coverPositionX: 50,
+  coverPositionY: 50,
   notes: "",
 };
 
@@ -241,6 +243,11 @@ export function AddGameForm({
               suggestedTitle={form.title}
               value={form.cover}
               onChange={(nextValue) => set("cover", nextValue)}
+              positionX={form.coverPositionX}
+              positionY={form.coverPositionY}
+              onPositionChange={(x, y) => {
+                setForm((prev) => ({ ...prev, coverPositionX: x, coverPositionY: y }));
+              }}
               disabled={submitting}
             />
           </Field>

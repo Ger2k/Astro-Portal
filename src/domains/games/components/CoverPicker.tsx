@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Button, Input } from "@shared/ui/primitives";
 
 interface CoverOption {
@@ -13,6 +13,9 @@ interface CoverPickerProps {
   suggestedTitle: string;
   value: string;
   onChange: (nextValue: string) => void;
+  positionX?: number;
+  positionY?: number;
+  onPositionChange?: (x: number, y: number) => void;
   disabled?: boolean;
 }
 
@@ -22,7 +25,82 @@ function releaseYear(date: string | null) {
   return Number.isNaN(year) ? "-" : String(year);
 }
 
-export function CoverPicker({ suggestedTitle, value, onChange, disabled }: CoverPickerProps) {
+function DraggableCoverPreview({
+  src,
+  positionX,
+  positionY,
+  onPositionChange,
+}: {
+  src: string;
+  positionX: number;
+  positionY: number;
+  onPositionChange: (x: number, y: number) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+  } | null>(null);
+
+  function handlePointerDown(e: React.PointerEvent) {
+    e.preventDefault();
+    containerRef.current?.setPointerCapture(e.pointerId);
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      originX: positionX,
+      originY: positionY,
+    };
+  }
+
+  function handlePointerMove(e: React.PointerEvent) {
+    const drag = dragRef.current;
+    const el = containerRef.current;
+    if (!drag || !el) return;
+
+    const rect = el.getBoundingClientRect();
+    const dx = ((e.clientX - drag.startX) / rect.width) * 100;
+    const dy = ((e.clientY - drag.startY) / rect.height) * 100;
+
+    onPositionChange(
+      Math.round(Math.min(100, Math.max(0, drag.originX - dx))),
+      Math.round(Math.min(100, Math.max(0, drag.originY - dy))),
+    );
+  }
+
+  function handlePointerUp(e: React.PointerEvent) {
+    dragRef.current = null;
+    containerRef.current?.releasePointerCapture(e.pointerId);
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <p className="text-xs text-muted-foreground">
+        Arrastra la imagen para ajustar el encuadre:
+      </p>
+      <div
+        ref={containerRef}
+        className="relative h-40 w-28 cursor-move overflow-hidden rounded-lg ring-1 ring-border select-none touch-none"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        <img
+          src={src}
+          alt="Arrastra para reposicionar la portada"
+          className="pointer-events-none h-full w-full object-cover"
+          style={{ objectPosition: `${positionX}% ${positionY}%` }}
+          draggable={false}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function CoverPicker({ suggestedTitle, value, onChange, positionX = 50, positionY = 50, onPositionChange, disabled }: CoverPickerProps) {
   const [results, setResults] = useState<CoverOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +183,7 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
             src={value}
             alt="Vista previa de portada"
             className="h-20 w-14 rounded object-cover ring-1 ring-border"
+            style={{ objectPosition: `${positionX}% ${positionY}%` }}
             loading="lazy"
           />
         ) : (
@@ -113,6 +192,15 @@ export function CoverPicker({ suggestedTitle, value, onChange, disabled }: Cover
           </div>
         )}
       </div>
+
+      {value.trim() && onPositionChange ? (
+        <DraggableCoverPreview
+          src={value}
+          positionX={positionX}
+          positionY={positionY}
+          onPositionChange={onPositionChange}
+        />
+      ) : null}
 
       {!canSearch ? (
         <p className="text-sm text-muted-foreground">
