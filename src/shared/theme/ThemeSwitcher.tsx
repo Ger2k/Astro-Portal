@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const THEME_STORAGE_KEY = "portal-theme";
 
@@ -31,8 +31,26 @@ function isThemeId(value: string | null): value is ThemeId {
   return THEMES.some((theme) => theme.id === value);
 }
 
+function SwatchIcon({ swatches, size = "sm" }: { swatches: readonly string[]; size?: "sm" | "md" }) {
+  const dims = size === "md" ? "h-5 w-5" : "h-4 w-4 sm:h-5 sm:w-5";
+  return (
+    <span className={`flex overflow-hidden rounded-full ring-1 ring-black/5 ${dims}`}>
+      {swatches.map((swatch) => (
+        <span
+          key={swatch}
+          className="h-full flex-1"
+          style={{ backgroundColor: swatch }}
+          aria-hidden="true"
+        />
+      ))}
+    </span>
+  );
+}
+
 export function ThemeSwitcher() {
   const [activeTheme, setActiveTheme] = useState<ThemeId>("forest");
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const currentTheme = document.documentElement.dataset.theme;
@@ -48,58 +66,63 @@ export function ThemeSwitcher() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("pointerdown", handleClick);
+    return () => document.removeEventListener("pointerdown", handleClick);
+  }, [isOpen]);
+
   function applyTheme(themeId: ThemeId) {
     document.documentElement.dataset.theme = themeId;
     window.localStorage.setItem(THEME_STORAGE_KEY, themeId);
     setActiveTheme(themeId);
+    setIsOpen(false);
   }
 
+  const activeThemeData = THEMES.find((t) => t.id === activeTheme) ?? THEMES[0];
+
   return (
-    <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-start sm:gap-3">
-      <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-        Estilo
-      </span>
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-foreground bg-surface shadow-sm transition sm:h-9 sm:w-9"
+        aria-label={`Tema: ${activeThemeData.label}. Cambiar estilo`}
+        aria-expanded={isOpen}
+        title={`Estilo: ${activeThemeData.label}`}
+      >
+        <SwatchIcon swatches={activeThemeData.swatches} />
+      </button>
 
-      <div className="flex flex-wrap items-center justify-end gap-2 sm:justify-start">
-        {THEMES.map((theme) => {
-          const isActive = theme.id === activeTheme;
-
-          return (
-            <button
-              key={theme.id}
-              type="button"
-              onClick={() => applyTheme(theme.id)}
-              className={[
-                "group relative flex h-8 w-8 items-center justify-center rounded-full border transition sm:h-9 sm:w-9",
-                isActive
-                  ? "border-foreground bg-surface shadow-sm"
-                  : "border-border bg-surface/80 hover:border-foreground/40",
-              ].join(" ")}
-              aria-label={`Cambiar tema a ${theme.label}`}
-              aria-pressed={isActive}
-              title={theme.label}
-            >
-              <span className="sr-only">{theme.label}</span>
-              <span className="flex h-4 w-4 overflow-hidden rounded-full ring-1 ring-black/5 sm:h-5 sm:w-5">
-                {theme.swatches.map((swatch) => (
-                  <span
-                    key={swatch}
-                    className="h-full flex-1"
-                    style={{ backgroundColor: swatch }}
-                    aria-hidden="true"
-                  />
-                ))}
-              </span>
-              {isActive ? (
-                <span
-                  className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-surface bg-foreground"
-                  aria-hidden="true"
-                />
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
+      {isOpen ? (
+        <div className="absolute right-0 top-full z-50 mt-2 flex flex-col gap-1 rounded-lg border border-border bg-surface p-1.5 shadow-lg">
+          {THEMES.map((theme) => {
+            const isActive = theme.id === activeTheme;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                onClick={() => applyTheme(theme.id)}
+                className={[
+                  "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition whitespace-nowrap",
+                  isActive
+                    ? "bg-muted font-medium text-foreground"
+                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                ].join(" ")}
+                aria-pressed={isActive}
+              >
+                <SwatchIcon swatches={theme.swatches} size="md" />
+                {theme.label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }
