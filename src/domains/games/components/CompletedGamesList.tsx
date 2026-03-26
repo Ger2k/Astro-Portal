@@ -408,24 +408,25 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <CardTitle>Juegos completados</CardTitle>
           </div>
 
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-            {addGameAction}
-            <Button
-              variant="ghost"
-              onClick={() => void loadGames()}
-              disabled={loading}
-              className="h-10 w-10 p-0 hover:bg-transparent"
-              aria-label={loading ? "Actualizando lista" : "Actualizar lista"}
-              title={loading ? "Actualizando..." : "Actualizar"}
-            >
-              <RefreshIcon className={loading ? "h-5 w-5 animate-spin" : "h-5 w-5"} />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            onClick={() => void loadGames()}
+            disabled={loading}
+            className="h-10 w-10 p-0 hover:bg-transparent"
+            aria-label={loading ? "Actualizando lista" : "Actualizar lista"}
+            title={loading ? "Actualizando..." : "Actualizar"}
+          >
+            <RefreshIcon className={loading ? "h-5 w-5 animate-spin" : "h-5 w-5"} />
+          </Button>
+        </div>
+
+        <div className="flex justify-end">
+          {addGameAction}
         </div>
       </CardHeader>
 
