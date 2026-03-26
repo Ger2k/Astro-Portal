@@ -167,7 +167,7 @@ export function AddGameForm({
             />
           </Field>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4">
             {/* Plataforma */}
             <Field label="Plataforma" required>
               <select
@@ -203,17 +203,17 @@ export function AddGameForm({
             </Field>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4">
             {/* Puntuación slider */}
             <Field label="Puntuación">
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-2">
                 <input
                   type="range"
                   min={0}
                   max={100}
                   value={form.score ?? 0}
                   onChange={(e) => set("score", Number(e.target.value))}
-                  className="flex-1 accent-primary"
+                  className="min-w-0 flex-1 accent-primary"
                   aria-label={`Puntuación: ${form.score ?? 0} de 100`}
                 />
                 <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">

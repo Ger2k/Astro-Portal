@@ -586,7 +586,7 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-medium text-foreground">Plataforma</label>
               <select
@@ -622,17 +622,17 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-medium text-foreground">Puntuación</label>
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-2">
                 <input
                   type="range"
                   min={0}
                   max={100}
                   value={editForm.score ?? 0}
                   onChange={(e) => setEditField("score", Number(e.target.value))}
-                  className="flex-1 accent-primary"
+                  className="min-w-0 flex-1 accent-primary"
                   aria-label={`Puntuación: ${editForm.score ?? 0} de 100`}
                 />
                 <span className="w-9 text-right text-sm font-semibold tabular-nums text-foreground">
