@@ -15,7 +15,7 @@ interface RawgGame {
 export const GET: APIRoute = async ({ url }) => {
   const query = url.searchParams.get("query")?.trim() ?? "";
 
-  if (query.length < 2) {
+  if (query.length < 2 || query.length > 100) {
     return new Response(JSON.stringify({ ok: true, data: [] }), {
       status: 200,
       headers: {

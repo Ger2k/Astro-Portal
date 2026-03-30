@@ -108,6 +108,39 @@ La aplicación está orientada a uso real y ya incluye:
 - temas visuales persistidos,
 - endpoint server-side para portadas con RAWG.
 
+## Seguridad y reglas de Firebase
+
+El archivo `database.rules.json` define las reglas de seguridad de Firebase Realtime Database.
+Cada usuario solo puede leer y escribir sus propios datos (`auth.uid === $uid`).
+
+Para desplegar las reglas en Firebase:
+
+```sh
+# Instala Firebase CLI si no lo tienes
+npm install -g firebase-tools
+
+# Autentícate
+firebase login
+
+# Inicializa el proyecto (selecciona tu proyecto cuando lo pida)
+firebase init database
+
+# Despliega solo las reglas
+firebase deploy --only database:rules
+```
+
+**Nunca subas el archivo `.env` a tu repositorio.** Usa el gestor de variables de entorno de Netlify para las credenciales de producción, y rota las claves si sospechas que se han expuesto.
+
+## CI / Integración continua
+
+El proyecto incluye un workflow de GitHub Actions en `.github/workflows/ci.yml` que ejecuta automáticamente:
+
+1. `npm run lint` — análisis estático con ESLint
+2. `npm run typecheck` — validación de tipos con Astro/TypeScript
+3. `npm run build` — compilación de producción
+
+El workflow se activa en cada push a `main` y en pull requests. No requiere secretos reales en CI porque las variables de Firebase se usan en runtime (cliente/servidor), no en tiempo de build.
+
 ## Licencia
 
 Uso privado o según lo que decida el propietario del repositorio.

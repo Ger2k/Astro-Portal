@@ -131,7 +131,8 @@ export function CoverPicker({ suggestedTitle, value, onChange, positionX = 50, p
       }
 
       setResults(payload.data ?? []);
-    } catch {
+    } catch (error) {
+      console.error("[CoverPicker] Search failed:", error);
       setResults([]);
       setError("No se pudo conectar para buscar portadas.");
     } finally {

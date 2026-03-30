@@ -15,6 +15,7 @@ import {
   CardTitle,
   Input,
   Modal,
+  Skeleton,
   ToastViewport,
   useToast,
 } from "@shared/ui/primitives";
@@ -472,7 +473,11 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
         </div>
 
         {loading ? (
-          <p className="text-sm text-muted-foreground">Cargando juegos...</p>
+          <div className="space-y-3" aria-busy="true" aria-label="Cargando juegos">
+            <Skeleton className="h-28 rounded-xl" />
+            <Skeleton className="h-28 rounded-xl" />
+            <Skeleton className="h-28 rounded-xl" />
+          </div>
         ) : null}
 
         {!loading && errorMessage ? (

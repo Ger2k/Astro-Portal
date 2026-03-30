@@ -2,6 +2,16 @@ import { ref, get, push, set, remove, update } from "firebase/database";
 import { getFirebaseDb } from "@config/firebase/client";
 import type { CompletedGame, NewGameInput } from "@domains/games/types/completedGame";
 
+/** Only allow https:// URLs to prevent javascript: / data: injection via cover field. */
+function isValidCoverUrl(value: unknown): value is string {
+  if (typeof value !== "string" || !value) return false;
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 type CompletedGamesResult =
   | { ok: true; data: CompletedGame[] }
   | { ok: false; errorMessage: string };
@@ -54,7 +64,7 @@ function mapToCompletedGame(raw: RawGame, nodeKey: string): CompletedGame {
     date: typeof raw.date === "string" && raw.date ? raw.date : null,
     score: typeof raw.score === "number" ? raw.score : null,
     hours: typeof raw.hours === "number" ? raw.hours : null,
-    cover: typeof raw.cover === "string" ? raw.cover : "",
+    cover: isValidCoverUrl(raw.cover) ? raw.cover : "",
     coverPositionX: typeof raw.coverPositionX === "number" ? raw.coverPositionX : 50,
     coverPositionY: typeof raw.coverPositionY === "number" ? raw.coverPositionY : 50,
     notes: typeof raw.notes === "string" ? raw.notes : "",

@@ -9,14 +9,14 @@ const THEMES = [
     swatches: ["#0f766e", "#d7f3ea", "#f6fbf7"],
   },
   {
-    id: "cobalt",
-    label: "Cobalto Noche",
-    swatches: ["#60a5fa", "#1e293b", "#0f172a"],
-  },
-  {
     id: "sand",
     label: "Arena",
     swatches: ["#b45309", "#fce7c7", "#fffaf2"],
+  },
+  {
+    id: "cobalt",
+    label: "Cobalto Noche",
+    swatches: ["#60a5fa", "#1e293b", "#0f172a"],
   },
   {
     id: "coral",
@@ -48,14 +48,14 @@ function SwatchIcon({ swatches, size = "sm" }: { swatches: readonly string[]; si
 }
 
 export function ThemeSwitcher() {
-  const [activeTheme, setActiveTheme] = useState<ThemeId>("forest");
+  const [activeTheme, setActiveTheme] = useState<ThemeId>("cobalt");
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const currentTheme = document.documentElement.dataset.theme;
-    if (isThemeId(currentTheme ?? null)) {
-      setActiveTheme(currentTheme);
+    const domTheme = document.documentElement.dataset.theme ?? null;
+    if (isThemeId(domTheme)) {
+      setActiveTheme(domTheme);
       return;
     }
 
