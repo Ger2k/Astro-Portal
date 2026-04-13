@@ -8,14 +8,7 @@ import {
   getAvailablePlatforms,
   getAvailableYears,
 } from "@domains/games/lib/stats";
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Skeleton,
-} from "@shared/ui/primitives";
+import { Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from "@shared/ui/primitives";
 import {
   Area,
   AreaChart,
@@ -24,8 +17,8 @@ import {
   CartesianGrid,
   Cell,
   ComposedChart,
-  Line,
-  LineChart,
+  /* Line,
+  LineChart, */
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -182,19 +175,12 @@ export function GamesStatsDashboard() {
     count: item.count,
   }));
 
-  const monthlyScoresChartData = stats.monthlyAverageScore.map((item) => ({
+  /* const monthlyScoresChartData = stats.monthlyAverageScore.map((item) => ({
     month: item.label,
     score: item.averageScore,
-  }));
+  })); */
 
-  const PLATFORM_COLORS = [
-    "#3b82f6",
-    "#8b5cf6",
-    "#ec4899",
-    "#f59e0b",
-    "#10b981",
-    "#06b6d4",
-  ];
+  const PLATFORM_COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#06b6d4"];
 
   const SCORE_COLORS = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
 
@@ -247,7 +233,8 @@ export function GamesStatsDashboard() {
 
           {!loading && !errorMessage && games.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Todavía no tienes datos suficientes. Añade juegos en tu biblioteca para ver estadísticas.
+              Todavía no tienes datos suficientes. Añade juegos en tu biblioteca para ver
+              estadísticas.
             </p>
           ) : null}
 
@@ -306,16 +293,8 @@ export function GamesStatsDashboard() {
                 <>
                   {/* KPI Cards - 6 columnas */}
                   <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                    <KPICard
-                      label="Juegos"
-                      value={stats.totalGames}
-                      accent="primary"
-                    />
-                    <KPICard
-                      label="Horas"
-                      value={stats.totalHours.toFixed(0)}
-                      accent="info"
-                    />
+                    <KPICard label="Juegos" value={stats.totalGames} accent="primary" />
+                    <KPICard label="Horas" value={stats.totalHours.toFixed(0)} accent="info" />
                     <KPICard
                       label="Puntuación"
                       value={formatAverageScore(stats.averageScore)}
@@ -353,45 +332,6 @@ export function GamesStatsDashboard() {
                       }
                     />
                   </div>
-
-                  {/* Insights Accionables */}
-                  <Card className="mb-8 border-l-4 border-l-primary">
-                    <CardHeader>
-                      <CardTitle className="text-base">💡 Insights</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {stats.topPlatform ? (
-                        <InsightItem
-                          icon="🎮"
-                          text={`Tu plataforma favorita es ${stats.topPlatform.platform} con ${stats.topPlatform.count} jueg${stats.topPlatform.count !== 1 ? "os" : "o"} completado${stats.topPlatform.count !== 1 ? "s" : ""}.`}
-                        />
-                      ) : null}
-
-                      {stats.gamesWithHours > 0 ? (
-                        <InsightItem
-                          icon="⏱️"
-                          text={`Inviertes ${stats.averageHoursPerGame.toFixed(1)} horas en promedio por juego (~${stats.totalHours.toFixed(0)} horas totales).`}
-                        />
-                      ) : null}
-
-                      <InsightItem
-                        icon="⭐"
-                        text={`Tu puntuación promedio es ${formatAverageScore(stats.averageScore)} (${getScoreCategory(stats.averageScore)}).`}
-                      />
-
-                      <InsightItem
-                        icon="📅"
-                        text={`Has completado ${stats.gamesInLastMonth} jueg${stats.gamesInLastMonth !== 1 ? "os" : "o"} en los últimos 30 días.`}
-                      />
-
-                      {stats.currentStreak > 0 ? (
-                        <InsightItem
-                          icon="🔥"
-                          text={`Hace ${stats.currentStreak} día${stats.currentStreak !== 1 ? "s" : ""} que no completas un juego. ¿Siguiente?`}
-                        />
-                      ) : null}
-                    </CardContent>
-                  </Card>
 
                   {/* Charts Grid - 2 columnas en desktop, 1 en móvil */}
                   <div className="grid gap-6 lg:grid-cols-2">
@@ -434,12 +374,16 @@ export function GamesStatsDashboard() {
                         </div>
                         <div className="mt-4 space-y-2">
                           {platformChartData.map((item, index) => (
-                            <div key={item.name} className="flex items-center justify-between text-xs">
+                            <div
+                              key={item.name}
+                              className="flex items-center justify-between text-xs"
+                            >
                               <div className="flex items-center gap-2">
                                 <div
                                   className="h-3 w-3 rounded-full"
                                   style={{
-                                    backgroundColor: PLATFORM_COLORS[index % PLATFORM_COLORS.length],
+                                    backgroundColor:
+                                      PLATFORM_COLORS[index % PLATFORM_COLORS.length],
                                   }}
                                 />
                                 <span className="font-medium">{item.name}</span>
@@ -462,14 +406,19 @@ export function GamesStatsDashboard() {
                             <AreaChart data={monthlyActivityChartData}>
                               <defs>
                                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.3} />
-                                  <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
+                                  <stop
+                                    offset="5%"
+                                    stopColor="var(--color-primary)"
+                                    stopOpacity={0.3}
+                                  />
+                                  <stop
+                                    offset="95%"
+                                    stopColor="var(--color-primary)"
+                                    stopOpacity={0}
+                                  />
                                 </linearGradient>
                               </defs>
-                              <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke="var(--color-border)"
-                              />
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                               <XAxis
                                 dataKey="month"
                                 tick={{ fontSize: 11 }}
@@ -512,10 +461,7 @@ export function GamesStatsDashboard() {
                         <div className="h-60">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={scoreDistributionChartData}>
-                              <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke="var(--color-border)"
-                              />
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                               <XAxis
                                 dataKey="name"
                                 tick={{ fontSize: 11 }}
@@ -564,11 +510,12 @@ export function GamesStatsDashboard() {
                               layout="vertical"
                               margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
                             >
-                              <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke="var(--color-border)"
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                              <XAxis
+                                type="number"
+                                tick={{ fontSize: 10 }}
+                                stroke="var(--color-muted-foreground)"
                               />
-                              <XAxis type="number" tick={{ fontSize: 10 }} stroke="var(--color-muted-foreground)" />
                               <YAxis
                                 type="category"
                                 dataKey="name"
@@ -598,77 +545,45 @@ export function GamesStatsDashboard() {
                       </CardContent>
                     </Card>
 
-                    {/* Tendencia Scores - Line con Banda */}
-                    <Card>
+                    {/* Insights Accionables */}
+                    <Card className="mb-8 border-l-4 border-l-primary">
                       <CardHeader>
-                        <CardTitle className="text-base">Tendencia de Puntuaciones</CardTitle>
+                        <CardTitle className="text-base">💡 Insights</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        <div className="h-60">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={monthlyScoresChartData}>
-                              <defs>
-                                <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.2} />
-                                  <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
-                                </linearGradient>
-                              </defs>
-                              <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke="var(--color-border)"
-                              />
-                              <XAxis
-                                dataKey="month"
-                                tick={{ fontSize: 11 }}
-                                stroke="var(--color-muted-foreground)"
-                              />
-                              <YAxis
-                                domain={[0, 100]}
-                                tick={{ fontSize: 11 }}
-                                stroke="var(--color-muted-foreground)"
-                              />
-                              <Tooltip
-                                contentStyle={{
-                                  backgroundColor: "var(--color-surface)",
-                                  border: "1px solid var(--color-border)",
-                                  borderRadius: 8,
-                                  fontSize: 12,
-                                }}
-                                formatter={(value) =>
-                                  value !== null ? `${(value as number).toFixed(1)} pts` : "Sin datos"
-                                }
-                              />
-                              <Area
-                                type="monotone"
-                                dataKey="score"
-                                stroke="transparent"
-                                fill="url(#colorScore)"
-                              />
-                              <Line
-                                type="monotone"
-                                dataKey="score"
-                                stroke="var(--color-primary)"
-                                strokeWidth={2.5}
-                                dot={(props) => {
-                                  const { cx, cy, payload } = props;
-                                  if (payload.score === null) return null;
-                                  return (
-                                    <circle
-                                      cx={cx}
-                                      cy={cy}
-                                      r={3}
-                                      fill="var(--color-primary)"
-                                      key={`dot-${payload.month}`}
-                                    />
-                                  );
-                                }}
-                                connectNulls
-                              />
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
+                      <CardContent className="space-y-3">
+                        {stats.topPlatform ? (
+                          <InsightItem
+                            icon="🎮"
+                            text={`Tu plataforma favorita es ${stats.topPlatform.platform} con ${stats.topPlatform.count} jueg${stats.topPlatform.count !== 1 ? "os" : "o"} completado${stats.topPlatform.count !== 1 ? "s" : ""}.`}
+                          />
+                        ) : null}
+
+                        {stats.gamesWithHours > 0 ? (
+                          <InsightItem
+                            icon="⏱️"
+                            text={`Inviertes ${stats.averageHoursPerGame.toFixed(1)} horas en promedio por juego (~${stats.totalHours.toFixed(0)} horas totales).`}
+                          />
+                        ) : null}
+
+                        <InsightItem
+                          icon="⭐"
+                          text={`Tu puntuación promedio es ${formatAverageScore(stats.averageScore)} (${getScoreCategory(stats.averageScore)}).`}
+                        />
+
+                        <InsightItem
+                          icon="📅"
+                          text={`Has completado ${stats.gamesInLastMonth} jueg${stats.gamesInLastMonth !== 1 ? "os" : "o"} en los últimos 30 días.`}
+                        />
+
+                        {stats.currentStreak > 0 ? (
+                          <InsightItem
+                            icon="🔥"
+                            text={`Hace ${stats.currentStreak} día${stats.currentStreak !== 1 ? "s" : ""} que no completas un juego. ¿Siguiente?`}
+                          />
+                        ) : null}
                       </CardContent>
                     </Card>
+                    
                   </div>
                 </>
               ) : null}
