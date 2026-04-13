@@ -181,34 +181,6 @@
 }
 
 @layer utilities {
-  .toast-enter {
-    animation: toast-enter 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .reveal-up {
-    animation: reveal-up 320ms ease-out both;
-  }
-
-  .stats-hero-panel {
-    border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, hsl(var(--border)));
-    background:
-      radial-gradient(circle at 85% 18%, color-mix(in oklab, hsl(var(--primary)) 30%, transparent), transparent 42%),
-      linear-gradient(
-        135deg,
-        color-mix(in oklab, hsl(var(--surface)) 92%, hsl(var(--primary)) 8%),
-        hsl(var(--surface))
-      );
-  }
-
-  .stats-kpi-card {
-    border: 1px solid color-mix(in oklab, hsl(var(--border)) 80%, hsl(var(--primary)) 20%);
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, hsl(var(--surface)) 92%, hsl(var(--primary)) 8%),
-      hsl(var(--surface))
-    );
-  }
-
   .surface-card {
     @apply rounded-xl border border-border bg-surface text-surface-foreground shadow-(--shadow-soft);
   }
@@ -250,27 +222,5 @@
 
   .state-panel-action:hover {
     background-color: color-mix(in oklab, currentColor 10%, transparent);
-  }
-}
-
-@keyframes toast-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

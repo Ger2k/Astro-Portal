@@ -8,14 +8,6 @@
           "$gameId": {
             ".validate": "newData.hasChildren(['title', 'platform'])"
           }
-        },
-        "achievements": {
-          "$achievementId": {
-            ".validate": "newData.hasChildren(['id', 'key', 'title', 'description', 'rarity', 'unlockedAt', 'placeholderIcon', 'progress', 'progressMax'])",
-            "unlockedAt": {
-              ".write": "!data.exists()"
-            }
-          }
         }
       }
     }
