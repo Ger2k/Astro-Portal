@@ -22,6 +22,8 @@ export interface ToastMessage extends VariantProps<typeof toastVariants> {
   id: string;
   title: string;
   description?: string;
+  iconUrl?: string;
+  iconAlt?: string;
 }
 
 interface ToastViewportProps {
@@ -37,10 +39,25 @@ export function ToastViewport({ toasts, onDismiss }: ToastViewportProps) {
       className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[min(92vw,24rem)] flex-col gap-3"
     >
       {toasts.map((toast) => (
-        <article key={toast.id} className={cn(toastVariants({ variant: toast.variant }))} role="status">
-          <div className="space-y-1">
-            <p className="font-semibold">{toast.title}</p>
-            {toast.description ? <p className="text-xs opacity-90">{toast.description}</p> : null}
+        <article
+          key={toast.id}
+          className={cn(toastVariants({ variant: toast.variant }), "toast-enter")}
+          role="status"
+        >
+          <div className="flex items-start gap-3">
+            {toast.iconUrl ? (
+              <img
+                src={toast.iconUrl}
+                alt={toast.iconAlt ?? "Icono del mensaje"}
+                className="mt-0.5 h-8 w-8 rounded-md border border-border/60 bg-surface object-cover"
+                loading="lazy"
+              />
+            ) : null}
+
+            <div className="space-y-1">
+              <p className="font-semibold">{toast.title}</p>
+              {toast.description ? <p className="text-xs opacity-90">{toast.description}</p> : null}
+            </div>
           </div>
           <button
             type="button"

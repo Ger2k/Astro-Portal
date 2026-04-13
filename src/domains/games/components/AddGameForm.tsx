@@ -1,6 +1,8 @@
 ﻿import { useState } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import { addGameForUser } from "@domains/games/services/completedGamesService";
+import { pushAchievementToast } from "@domains/games/lib/pushAchievementToast";
+import { syncAchievementsForUser } from "@domains/games/lib/syncAchievementsForUser";
 import { CoverPicker } from "@domains/games/components/CoverPicker";
 import type { NewGameInput } from "@domains/games/types/completedGame";
 import { Button, Input, Modal, ToastViewport, useToast } from "@shared/ui/primitives";
@@ -140,6 +142,13 @@ export function AddGameForm({
       title: "Juego añadido",
       description: "El juego se guardó correctamente.",
     });
+
+    const syncResult = await syncAchievementsForUser(user.uid);
+
+    if (syncResult.ok && syncResult.unlockedNowCount > 0) {
+      pushAchievementToast(push, syncResult.unlockedNow);
+    }
+
     onSuccess();
   }
 

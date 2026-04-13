@@ -5,6 +5,8 @@ import {
   fetchCompletedGamesForUser,
   updateGameForUser,
 } from "@domains/games/services/completedGamesService";
+import { pushAchievementToast } from "@domains/games/lib/pushAchievementToast";
+import { syncAchievementsForUser } from "@domains/games/lib/syncAchievementsForUser";
 import { CoverPicker } from "@domains/games/components/CoverPicker";
 import type { CompletedGame, NewGameInput } from "@domains/games/types/completedGame";
 import {
@@ -249,6 +251,13 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
     }
 
     setGames((prev) => prev.filter((g) => g.nodeKey !== pendingDelete.nodeKey));
+
+    const syncResult = await syncAchievementsForUser(user.uid);
+
+    if (syncResult.ok && syncResult.unlockedNowCount > 0) {
+      pushAchievementToast(push, syncResult.unlockedNow);
+    }
+
     push({
       variant: "success",
       title: "Juego eliminado",
@@ -401,6 +410,12 @@ export function CompletedGamesList({ addGameAction }: CompletedGamesListProps) {
           : game,
       ),
     );
+
+    const syncResult = await syncAchievementsForUser(user.uid);
+
+    if (syncResult.ok && syncResult.unlockedNowCount > 0) {
+      pushAchievementToast(push, syncResult.unlockedNow);
+    }
 
     push({
       variant: "success",

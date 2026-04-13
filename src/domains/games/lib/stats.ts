@@ -15,6 +15,12 @@ export interface GamesStatsSummary {
   totalGames: number;
   totalHours: number;
   averageScore: number | null;
+  scoredGamesCount: number;
+  gamesWithHoursCount: number;
+  averageHoursPerGame: number;
+  bestScore: number | null;
+  completionThisMonth: number;
+  platformsDiversity: number;
   topPlatform: PlatformDistributionItem | null;
   platformDistribution: PlatformDistributionItem[];
   monthlyActivity: MonthlyActivityItem[];
@@ -118,7 +124,27 @@ function getMonthlyActivity(games: CompletedGame[], months = 6): MonthlyActivity
   }));
 }
 
-export function buildGamesStats(games: CompletedGame[]): GamesStatsSummary {
+function getCompletionThisMonth(games: CompletedGame[]) {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  return games.reduce((acc, game) => {
+    const parsedDate = parseValidDate(game.date);
+    if (!parsedDate) return acc;
+
+    if (parsedDate.getFullYear() === currentYear && parsedDate.getMonth() === currentMonth) {
+      return acc + 1;
+    }
+
+    return acc;
+  }, 0);
+}
+
+export function buildGamesStats(
+  games: CompletedGame[],
+  options?: { activityMonths?: number },
+): GamesStatsSummary {
   const totalGames = games.length;
 
   const totalHours = games.reduce((acc, game) => acc + (typeof game.hours === "number" ? game.hours : 0), 0);
@@ -132,14 +158,26 @@ export function buildGamesStats(games: CompletedGame[]): GamesStatsSummary {
       ? scoredGames.reduce((acc, score) => acc + score, 0) / scoredGames.length
       : null;
 
+  const bestScore = scoredGames.length > 0 ? Math.max(...scoredGames) : null;
+
+  const gamesWithHoursCount = games.filter((game) => typeof game.hours === "number").length;
+  const averageHoursPerGame = totalGames > 0 ? totalHours / totalGames : 0;
+
   const platformDistribution = getPlatformDistribution(games);
+  const activityMonths = options?.activityMonths ?? 6;
 
   return {
     totalGames,
     totalHours,
     averageScore,
+    scoredGamesCount: scoredGames.length,
+    gamesWithHoursCount,
+    averageHoursPerGame,
+    bestScore,
+    completionThisMonth: getCompletionThisMonth(games),
+    platformsDiversity: platformDistribution.length,
     topPlatform: platformDistribution[0] ?? null,
     platformDistribution,
-    monthlyActivity: getMonthlyActivity(games),
+    monthlyActivity: getMonthlyActivity(games, activityMonths),
   };
 }

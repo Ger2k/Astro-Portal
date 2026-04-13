@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuthSession } from "@domains/auth/hooks/useAuthSession";
 import { fetchCompletedGamesForUser } from "@domains/games/services/completedGamesService";
+import { fetchAchievementsForUser } from "@domains/games/services/achievementsService";
+import { evaluateAchievements } from "@domains/games/lib/achievementsEngine";
+import { syncAchievementsForUser } from "@domains/games/lib/syncAchievementsForUser";
+import { AchievementsPanel } from "@domains/games/components/AchievementsPanel";
 import type { CompletedGame } from "@domains/games/types/completedGame";
+import type { AchievementProgress, UserAchievement } from "@domains/games/types/achievement";
 import {
   buildGamesStats,
   filterGamesForStats,
@@ -36,6 +41,10 @@ function formatAverageScore(score: number | null) {
   return score.toFixed(1);
 }
 
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1 }).format(value);
+}
+
 function RefreshIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
     <svg
@@ -61,21 +70,28 @@ type StatsView = "platforms" | "timeline";
 export function GamesStatsDashboard() {
   const { user } = useAuthSession();
   const [games, setGames] = useState<CompletedGame[]>([]);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<UserAchievement[]>([]);
+  const [achievementProgress, setAchievementProgress] = useState<AchievementProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [achievementError, setAchievementError] = useState<string | null>(null);
   const [view, setView] = useState<StatsView>("platforms");
   const [selectedYear, setSelectedYear] = useState("Todos");
   const [selectedPlatform, setSelectedPlatform] = useState("Todas");
+  const [activityMonths, setActivityMonths] = useState("6");
 
   async function loadGames() {
     if (!user) {
       setGames([]);
+      setUnlockedAchievements([]);
+      setAchievementProgress([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
     setErrorMessage(null);
+    setAchievementError(null);
 
     const result = await fetchCompletedGamesForUser(user.uid);
 
@@ -87,6 +103,24 @@ export function GamesStatsDashboard() {
     }
 
     setGames(result.data);
+
+    const syncResult = await syncAchievementsForUser(user.uid);
+    if (!syncResult.ok) {
+      setAchievementError(syncResult.errorMessage);
+    }
+
+    const achievementsResult = await fetchAchievementsForUser(user.uid);
+    if (!achievementsResult.ok) {
+      setUnlockedAchievements([]);
+      setAchievementProgress([]);
+      setAchievementError(achievementsResult.errorMessage);
+      setLoading(false);
+      return;
+    }
+
+    const evaluated = evaluateAchievements(result.data, achievementsResult.data);
+    setUnlockedAchievements(evaluated.unlockedAll);
+    setAchievementProgress(evaluated.progressList);
     setLoading(false);
   }
 
@@ -106,7 +140,10 @@ export function GamesStatsDashboard() {
     [games, selectedPlatform, selectedYear],
   );
 
-  const stats = useMemo(() => buildGamesStats(filteredGames), [filteredGames]);
+  const stats = useMemo(
+    () => buildGamesStats(filteredGames, { activityMonths: Number(activityMonths) }),
+    [activityMonths, filteredGames],
+  );
 
   const topPlatforms = stats.platformDistribution.slice(0, 8).map((item) => ({
     platform: item.platform,
@@ -124,6 +161,8 @@ export function GamesStatsDashboard() {
       : `Tu plataforma más fuerte es ${stats.topPlatform.platform} con ${stats.topPlatform.count} juegos completados.`;
 
   const hasStats = filteredGames.length > 0;
+  const scoreCoverage = stats.totalGames > 0 ? Math.round((stats.scoredGamesCount / stats.totalGames) * 100) : 0;
+  const hoursCoverage = stats.totalGames > 0 ? Math.round((stats.gamesWithHoursCount / stats.totalGames) * 100) : 0;
 
   return (
     <section className="space-y-4">
@@ -220,20 +259,60 @@ export function GamesStatsDashboard() {
                 </Tabs>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <Card className="p-4">
+              <div className="grid gap-3 md:grid-cols-[220px_minmax(0,1fr)]">
+                <select
+                  className="h-10 w-full rounded-(--radius-md) border border-input bg-surface px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={activityMonths}
+                  onChange={(e) => setActivityMonths(e.target.value)}
+                  aria-label="Ventana de actividad"
+                >
+                  <option value="6">Ultimos 6 meses</option>
+                  <option value="12">Ultimos 12 meses</option>
+                </select>
+                <p className="text-sm text-muted-foreground">
+                  Ventana temporal para analizar evolución y ritmo de completación.
+                </p>
+              </div>
+
+              <Card className="stats-hero-panel p-5 reveal-up">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Panel de rendimiento</p>
+                    <p className="text-2xl font-semibold leading-tight text-foreground sm:text-3xl">
+                      {stats.totalGames === 0
+                        ? "Tu panel esta listo para arrancar"
+                        : `Has completado ${stats.totalGames} juegos con ${stats.totalHours} horas acumuladas`}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{highlight}</p>
+                  </div>
+
+                  <div className="grid gap-2 text-right">
+                    <div className="rounded-lg border border-border/70 bg-surface/80 px-3 py-2">
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Cobertura score</p>
+                      <p className="text-xl font-semibold text-foreground">{scoreCoverage}%</p>
+                    </div>
+                    <div className="rounded-lg border border-border/70 bg-surface/80 px-3 py-2">
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Cobertura horas</p>
+                      <p className="text-xl font-semibold text-foreground">{hoursCoverage}%</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 reveal-up" style={{ animationDelay: "40ms" }}>
+                <Card className="stats-kpi-card p-4">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Juegos completados</p>
                   <p className="text-2xl font-semibold text-foreground">{stats.totalGames}</p>
                 </Card>
-                <Card className="p-4">
+                <Card className="stats-kpi-card p-4">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Horas registradas</p>
                   <p className="text-2xl font-semibold text-foreground">{stats.totalHours}</p>
                 </Card>
-                <Card className="p-4">
+                <Card className="stats-kpi-card p-4">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Puntuación media</p>
                   <p className="text-2xl font-semibold text-foreground">{formatAverageScore(stats.averageScore)}</p>
                 </Card>
-                <Card className="p-4">
+                <Card className="stats-kpi-card p-4">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Plataforma top</p>
                   <p className="line-clamp-1 text-lg font-semibold text-foreground">
                     {stats.topPlatform?.platform ?? "Sin datos"}
@@ -241,9 +320,51 @@ export function GamesStatsDashboard() {
                 </Card>
               </div>
 
-              <Card className="p-4">
-                <p className="text-sm text-muted-foreground">{highlight}</p>
-              </Card>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 reveal-up" style={{ animationDelay: "80ms" }}>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Horas por juego</p>
+                  <p className="text-2xl font-semibold text-foreground">{formatNumber(stats.averageHoursPerGame)}</p>
+                </Card>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Juegos con score</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats.scoredGamesCount}</p>
+                </Card>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Mejor score</p>
+                  <p className="text-2xl font-semibold text-foreground">
+                    {stats.bestScore === null ? "N/D" : stats.bestScore}
+                  </p>
+                </Card>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Completados este mes</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats.completionThisMonth}</p>
+                </Card>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 reveal-up" style={{ animationDelay: "120ms" }}>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Diversidad de plataformas</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats.platformsDiversity}</p>
+                </Card>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Juegos con horas</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats.gamesWithHoursCount}</p>
+                </Card>
+                <Card className="stats-kpi-card p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Logros desbloqueados</p>
+                  <p className="text-2xl font-semibold text-foreground">
+                    {unlockedAchievements.length}/{achievementProgress.length}
+                  </p>
+                </Card>
+              </div>
+
+              {achievementError ? (
+                <Card className="p-4">
+                  <p className="state-danger-panel rounded-md border px-3 py-2 text-sm">{achievementError}</p>
+                </Card>
+              ) : null}
+
+              <AchievementsPanel unlocked={unlockedAchievements} progress={achievementProgress} />
 
               {!hasStats ? (
                 <Card className="p-4">
@@ -283,7 +404,7 @@ export function GamesStatsDashboard() {
               {hasStats && view === "timeline" ? (
                 <Card className="p-4">
                   <CardHeader className="mb-3 p-0">
-                    <CardTitle className="text-base">Evolución (últimos 6 meses)</CardTitle>
+                    <CardTitle className="text-base">Evolución ({activityMonths === "6" ? "ultimos 6 meses" : "ultimos 12 meses"})</CardTitle>
                   </CardHeader>
                   <CardContent className="h-70 p-0">
                     <ResponsiveContainer width="100%" height="100%">
