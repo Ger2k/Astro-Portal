@@ -36,12 +36,7 @@ export function AppPrivateView() {
       setAchievementsLoading(true);
       setAchievementsError(null);
 
-      const syncResult = await syncAchievementsForUser(user.uid);
-
-      if (!syncResult.ok && !cancelled) {
-        setAchievementsError(syncResult.errorMessage);
-      }
-
+      // Fetch first, evaluate, then sync without blocking initial load
       const [gamesResult, achievementsResult] = await Promise.all([
         fetchCompletedGamesForUser(user.uid),
         fetchAchievementsForUser(user.uid),
