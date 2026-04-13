@@ -1,4 +1,4 @@
-import { get, ref, update } from "firebase/database";
+import { get, ref, set } from "firebase/database";
 import { getFirebaseDb } from "@config/firebase/client";
 import type { UserAchievement } from "@domains/games/types/achievement";
 
@@ -82,7 +82,9 @@ export async function saveAchievementsForUser(
       return acc;
     }, {});
 
-    await update(achievementsRef, payload);
+    // Use set() instead of update() to handle both creation and updates
+    // update() fails if the path doesn't exist yet on first login
+    await set(achievementsRef, payload);
 
     return { ok: true };
   } catch (error) {
